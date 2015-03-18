@@ -72,64 +72,43 @@
                             paginator="true"
                             selectionMode="single"
                             emptyMessage="No hay datos">
-                            
+
                             <f:facet name="{Exporters}">
                                 <h:commandLink value="Exportar a excel" id="xls">
-                                    <p:dataExporter type="xls" target="datalist" fileName="reporte"/>
+                                    <p:dataExporter type="xls" target="datalist" fileName="reporte" pageOnly="true" />
                                 </h:commandLink>
                                 <h:commandLink value="Exportar a csv">
                                     <p:dataExporter type="csv" target="datalist" fileName="reporte"/>
                                 </h:commandLink>
                             </f:facet>
 
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="#{myBundle.codigo_header}"/>
-                                </f:facet>
+                            <p:column headerText="#{myBundle.codigo_header}">
                                 <h:outputText value="#{reporte.empleado.codigo}"/>
                             </p:column>
 
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Apellidos y nombres"/>
-                                </f:facet>
+                            <p:column headerText="Apellidos y nombres">
                                 <h:outputText value="#{reporte.empleado.apellidos} #{reporte.empleado.nombres}"/>
                             </p:column>
 
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Fecha"/>
-                                </f:facet>
+                            <p:column headerText="Fecha">
                                 <h:outputText value="#{reporte.fecha}">
                                     <f:convertDateTime pattern="dd.MM.yyyy" />
                                 </h:outputText>
                             </p:column>
 
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Turno"/>
-                                </f:facet>
+                            <p:column headerText="Turno">
                                 <h:outputText value="#{reporte.turnoOriginal.jornadaCodigo.nombre}"/>
                             </p:column>
 
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Asistencia"/>
-                                </f:facet>
+                            <p:column headerText="Asistencia">
                                 <h:outputText value="#{reporte.tipo}" converter="tipoAsistenciaConverter"/>
                             </p:column>
 
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Tardanza (minutos)"/>
-                                </f:facet>
+                            <p:column headerText="Tardanza (minutos)">
                                 <h:outputText value="#{reporte.milisTardanzaTotal}" converter="milisAMinutos"/>
                             </p:column>
 
-                            <p:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Tiempo extra (minutos)"/>
-                                </f:facet>
+                            <p:column headerText="Tiempo extra (minutos)">
                                 <h:outputText value="#{reporte.milisTrabajoTotal}" converter="milisAMinutos"/>
                             </p:column>
 

@@ -23,7 +23,8 @@ public class EmpleadoConverter implements Converter {
     @EJB
     private EmpleadoFacadeLocal ejbFacade;
     
-    
+    //PRUEBA
+    private int i = 0;
 
     @Override
     public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
