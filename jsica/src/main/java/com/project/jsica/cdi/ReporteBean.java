@@ -166,7 +166,7 @@ public class ReporteBean implements Serializable {
             if (opcion == 1) {
                 LOG.info("REPORTE DE ASISTENCIA POR EMPLEADO");
                 registroAsistencia = registroAsistenciaController.buscarXEmpleado(empleado, desde, hasta);
-            } else {
+            }else {
                 LOG.info("REPORTE DE ASISTENCIA POR AREA");
                 registroAsistencia = registroAsistenciaController.buscarXArea(areaSeleccionada, desde, hasta);
             }
@@ -706,7 +706,7 @@ public class ReporteBean implements Serializable {
             columna8.setCellValue(reporte.get(i).getMotivo());
         }
 
-        String NombreArchivo = "C:/reporte_asistencias.xls";
+        String NombreArchivo = "C:/reporte_permiso.xls";
         File objFile = new File(NombreArchivo);
 //        FacesContext facesContext = FacesContext.getCurrentInstance();
 //        ExternalContext externalContext = facesContext.getExternalContext();
@@ -782,7 +782,7 @@ public class ReporteBean implements Serializable {
             columna6.setCellValue(reporte.get(i).getMilisTrabajoTotal());
         }
 
-        String NombreArchivo = "C:/reporte_permisos.xls";
+        String NombreArchivo = "C:/reporte_asistencia.xls";
         File objFile = new File(NombreArchivo);
 //        FacesContext facesContext = FacesContext.getCurrentInstance();
 //        ExternalContext externalContext = facesContext.getExternalContext();

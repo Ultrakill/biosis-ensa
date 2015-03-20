@@ -1,14 +1,17 @@
 package com.project.jsica.cdi;
 
-import dao.CambioTurnoFacadeLocal;
-import dao.DetalleHorarioFacade;
-import dao.DetalleHorarioFacadeLocal;
-import dao.EmpleadoHorarioFacadeLocal;
 import com.project.jsica.ejb.entidades.Bitacora;
 import com.project.jsica.ejb.entidades.CambioTurno;
 import com.project.jsica.ejb.entidades.DetalleHorario;
 import com.project.jsica.ejb.entidades.Empleado;
 import com.project.jsica.ejb.entidades.EmpleadoHorario;
+import com.project.jsica.ejb.entidades.Horario;
+import dao.CambioTurnoFacadeLocal;
+import dao.DetalleHorarioFacade;
+import dao.DetalleHorarioFacadeLocal;
+import dao.EmpleadoHorarioFacade;
+import dao.EmpleadoHorarioFacadeLocal;
+import dao.HorarioFacade;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,13 +33,13 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
 
     @EJB
     private CambioTurnoFacadeLocal cambioTurnoFacade;
-    
+
     @EJB
     private DetalleHorarioFacadeLocal detalleTurnoFacade;
-    
+
     @EJB
     private EmpleadoHorarioFacadeLocal empleadoDAO;
-    
+
     @Inject
     private BitacoraController bitacoraC;
 
@@ -46,13 +49,13 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
     private DetalleHorarioController detalleHorarioReemplazoController;
     @Inject
     private EmpleadoController jefeInmediatoIdController;
-    
+
     private Date fechaTurno1;
     private Date fechaTurno2;
 
     private boolean isFechaTurno1;
     private boolean isFechaTurno2;
-    
+
     public Date getFechaTurno1() {
         return fechaTurno1;
     }
@@ -85,8 +88,6 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
         this.isFechaTurno2 = isFechaTurno2;
     }
 
-    
-    
     public CambioTurnoController() {
         // Inform the Abstract parent controller of the concrete CambioTurno?cap_first Entity
         super(CambioTurno.class);
@@ -153,7 +154,7 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
 //           
             //Ip Cliente
             String ip_cliente = ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).getRemoteAddr();
-            
+
             String detalle_horario_original = this.selected.getDetalleHorarioOriginal().toString();
             String detalle_horario_reemplazo = this.selected.getDetalleHorarioReemplazo().toString();
             String fecha_pedido = this.selected.getFechaPedido().toString();
@@ -211,10 +212,10 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
             Bitacora bitacora = new Bitacora();
             //Fecha y hora//          
             Date fechas = new Date();
-            
+
             //Ip Cliente
             String ip_cliente = ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).getRemoteAddr();
-            
+
             //Datos
             bitacora.setUsuario("JC");
             bitacora.setIpCliente(ip_cliente);
@@ -272,10 +273,10 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
         //----Bitacora----
         //Fecha y hora//          
         Date fechas = new Date();
-        
+
         //Ip Cliente
         String ip_cliente = ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).getRemoteAddr();
-        
+
         //Campos
         String detalle_horario_original1 = this.selected.getDetalleHorarioOriginal().toString();
         String detalle_horario_reemplazo1 = this.selected.getDetalleHorarioReemplazo().toString();
@@ -342,50 +343,68 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
     public List<CambioTurno> search(String namedQuery, Map<String, Object> parametros, int inicio, int tamanio) {
         return this.cambioTurnoFacade.search(namedQuery, parametros, inicio, tamanio);
     }
-    
-    public List<DetalleHorario> getTurnosxEmpleados1(){
-        String query="SELECT eh FROM empleadoHorario WHERE eh.empleadoId=:dni";
+
+    public List<DetalleHorario> getTurnosxEmpleados1() {
+        String query = "SELECT eh FROM empleadoHorario WHERE eh.empleadoId=:dni";
         Map<String, Object> parametros = new HashMap<>();
-        parametros.put("dni",this.getSelected().getEmpleado1Id().getDocIdentidad());
+        parametros.put("dni", this.getSelected().getEmpleado1Id().getDocIdentidad());
         List<EmpleadoHorario> lista = empleadoDAO.search(query, parametros);
-        
+
         List<DetalleHorario> resultado = new ArrayList<>();
-        
-        for(EmpleadoHorario eh : lista){
+
+        for (EmpleadoHorario eh : lista) {
             resultado.addAll(eh.getHorarioId().getDetalleHorarioList());
         }
-        
+
         return resultado;
     }
-    
-    public List<DetalleHorario> getTurnosxEmpleados2(){
-        String query="SELECT eh FROM empleadoHorario WHERE eh.empleadoId=:dni";
+
+    public List<DetalleHorario> getTurnosxEmpleados2() {
+        String query = "SELECT eh FROM empleadoHorario WHERE eh.empleadoId=:dni";
         Map<String, Object> parametros = new HashMap<>();
-        parametros.put("dni",this.getSelected().getEmpleado2Id().getDocIdentidad());
+        parametros.put("dni", this.getSelected().getEmpleado2Id().getDocIdentidad());
         List<EmpleadoHorario> lista = empleadoDAO.search(query, parametros);
-        
+
         List<DetalleHorario> resultado = new ArrayList<>();
-        
-        for(EmpleadoHorario eh : lista){
+
+        for (EmpleadoHorario eh : lista) {
             resultado.addAll(eh.getHorarioId().getDetalleHorarioList());
         }
-        
+
         return resultado;
     }
- 
-    public void onFechaSelecciona1(){
-        if(this.fechaTurno1!=null){
-            this.isFechaTurno1=true;
+
+    public void onFechaSelecciona1() {
+        if (this.fechaTurno1 != null) {
+            this.isFechaTurno1 = true;
             return;
         }
-        this.isFechaTurno1=false;
+        this.isFechaTurno1 = false;
     }
-    
-    public void onFechaSelecciona2(){
-        if(this.fechaTurno2!=null){
-            this.isFechaTurno2=true;
+
+    public void onFechaSelecciona2() {
+        if (this.fechaTurno2 != null) {
+            this.isFechaTurno2 = true;
             return;
         }
-        this.isFechaTurno2=false;
+        this.isFechaTurno2 = false;
+    }
+
+    CambioTurnoController cambioturnoController = new CambioTurnoController();
+    EmpleadoHorarioFacade empleadoHorarioController = new EmpleadoHorarioFacade();
+    HorarioFacade horarioController = new HorarioFacade();
+    DetalleHorarioFacade dhorarioController = new DetalleHorarioFacade();
+
+    public List<EmpleadoHorario> buscarHorario(Empleado empleado) {
+        DetalleHorario hora = new DetalleHorario();
+        hora.getHorarioId().getEmpleadoHorario().getEmpleadoId();
+
+//        List<DetalleHorario> horariosXFecha = dhorarioController.buscarXEmpleadoXHorario(fechaTurno1, empleado);
+        return null;
+
+    }
+
+    public void cambiarTurno(Horario horario, EmpleadoHorario empleado1, List<EmpleadoHorario> empleado2) {
+        
     }
 }

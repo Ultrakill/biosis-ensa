@@ -5,8 +5,13 @@
  */
 package dao;
 
+import com.project.jsica.ejb.entidades.Empleado;
 import com.project.jsica.ejb.entidades.EmpleadoHorario;
+import com.project.jsica.ejb.entidades.Horario;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -35,6 +40,14 @@ public class EmpleadoHorarioFacade extends AbstractFacade<EmpleadoHorario> imple
         String sql = "SELECT eh FROM EmpleadoHorario eh WHERE eh.horarioId.porFecha = TRUE";
         return this.getEntityManager().createQuery(sql).getResultList();
 
+    }
+    
+    public List<EmpleadoHorario> buscarHorarioAsistencialXEmpleado(Empleado empleado){
+        String jpql = "SELECT eh FROM EmpleadoHorario eh WHERE eh.horarioId.porFecha = TRUE AND eh.empleadoId = :empleado";
+        Map<String,Object> mapa = new HashMap<>();
+        mapa.put("empleado", empleado);
+        
+        return search(jpql, mapa);
     }
 
 }
