@@ -1,5 +1,6 @@
 package com.project.jsica.cdi;
 
+import static com.project.jsica.converter.EmpleadoConverter.empleadoDesesperacion;
 import com.project.jsica.ejb.entidades.Bitacora;
 import com.project.jsica.ejb.entidades.CambioTurno;
 import com.project.jsica.ejb.entidades.DetalleHorario;
@@ -63,14 +64,17 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
     private Empleado empleado2;
     
     private List<DetalleHorario> horarioXFecha;
+    private boolean isEmpleado1;
+    private boolean isEmpleado2;
 
     public Empleado getEmpleado1() {
         return empleado1;
     }
 
     public void setEmpleado1(Empleado empleado1) {
-        LOG.info("EMPLEADO INGRESADO: "+ this.empleado1);
+        
         this.empleado1 = empleado1;
+        LOG.info("EMPLEADO INGRESADO: "+ this.empleado1);
     }
 
     public Empleado getEmpleado2() {
@@ -90,7 +94,7 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
     public void setFechaTurno1(Date fechaTurno1) {
         this.fechaTurno1 = fechaTurno1;
         
-        LOG.info("FECHA1: "+fechaTurno1);
+        LOG.info("FECHA1: "+this.fechaTurno1);
     }
 
     public Date getFechaTurno2() {
@@ -402,6 +406,22 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
 
         return resultado;
     }
+    
+    public void onEmpleadoSelecciona1() {
+        if (this.empleado1 != null) {
+            this.isEmpleado1 = true;
+            return;
+        }
+        this.isEmpleado1 = false;
+    }
+    
+    public void onEmpleadoSelecciona2() {
+        if (this.empleado2 != null) {
+            this.isEmpleado2 = true;
+            return;
+        }
+        this.isEmpleado2 = false;
+    }
 
     public void onFechaSelecciona1() {
         if (this.fechaTurno1 != null) {
@@ -432,17 +452,33 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
     
     private static final java.util.logging.Logger LOG = java.util.logging.Logger.getLogger(CambioTurnoController.class.getName());
     
-    public List<DetalleHorario> getHorarios() {
+    public List<DetalleHorario> getHorarios1() {
         
-        
-        if (this.isFechaTurno1 && empleado1!= null){
+        this.empleado1 = empleadoDesesperacion;
+        LOG.info("EMPLEADO D: "+ empleadoDesesperacion);
+        if (this.isFechaTurno1 && this.empleado1 != null){
             LOG.info("Lista de Horarios por Fecha, parametros:");
             LOG.info("Empleado: "+ empleado1);
             LOG.info("FECHA: "+ fechaTurno1);
-            
             return this.detalleHorarioFacade.buscarXEmpleadoXFecha(empleado1, fechaTurno1);
+//            return this.detalleHorarioFacade.buscarXEmpleadoXFecha2(empleado1, fechaTurno1);
         } else {
             LOG.info("LA LISTA ES NULL :c");
+            return null;
+        }
+    }
+    
+    public List<DetalleHorario> getHorarios2() {   
+        this.empleado2 = empleadoDesesperacion;
+        LOG.info("EMPLEADO2 D: "+ empleadoDesesperacion);
+        if (this.isFechaTurno2 && this.empleado2 != null){
+            LOG.info("Lista de Horarios por Fecha, parametros:");
+            LOG.info("Empleado2: "+ empleado2);
+            LOG.info("FECHA2: "+ fechaTurno2);
+            return this.detalleHorarioFacade.buscarXEmpleadoXFecha(empleado2, fechaTurno2);
+//            return this.detalleHorarioFacade.buscarXEmpleadoXFecha2(empleado2, fechaTurno2);
+        } else {
+            LOG.info("LA LISTA 2 ES NULL :c");
             return null;
         }
     }

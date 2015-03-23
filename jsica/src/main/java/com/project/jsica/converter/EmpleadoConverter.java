@@ -19,6 +19,7 @@ import org.jfree.util.Log;
 public class EmpleadoConverter implements Converter {
 
     private static final Logger LOG = Logger.getLogger(EmpleadoConverter.class.getName());
+    public static Empleado empleadoDesesperacion;
     
     @EJB
     private EmpleadoFacadeLocal ejbFacade;
@@ -34,6 +35,8 @@ public class EmpleadoConverter implements Converter {
             return null;
         }
         LOG.info(value);
+        
+        empleadoDesesperacion = this.ejbFacade.find(value);
         return this.ejbFacade.find(value);
     }
 
