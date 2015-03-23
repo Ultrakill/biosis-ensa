@@ -69,8 +69,9 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
     }
 
     public void setEmpleado1(Empleado empleado1) {
-        LOG.info("EMPLEADO INGRESADO: "+ this.empleado1);
+        
         this.empleado1 = empleado1;
+        LOG.info("EMPLEADO INGRESADO: "+ this.empleado1);
     }
 
     public Empleado getEmpleado2() {
