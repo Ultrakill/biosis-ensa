@@ -333,7 +333,7 @@ public class AnalisisFinal implements AnalisisFinalLocal {
                 } else {
                     //NO HAY SUCESO SUSCEPTIBLE A REGISTRO
                     registro = null;
-                    LOG.info("Registro null o.o");
+                    LOG.info("Registro null");
                 }
 //                }
 //                }// FIN DEL ELSE PRINCIPAL

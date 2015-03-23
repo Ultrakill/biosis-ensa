@@ -161,7 +161,7 @@ public class DetalleHorario implements Serializable {
 
     @Override
     public String toString() {
-        return "com.project.jsica.ejb.entidades.DetalleHorario[ id=" + id + " ]";
+        return fecha+"";
     }
     
 }

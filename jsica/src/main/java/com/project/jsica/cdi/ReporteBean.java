@@ -358,10 +358,11 @@ public class ReporteBean implements Serializable {
 //        List<Empleado> empleados = this.getEmpleados(opcion);
         List<EmpleadoPermiso> permisos;
         List<ReportePermisoBean> reporte = new ArrayList<>();
+        LOG.info("EMPLEADO: "+ empleado);
         permisos = this.empleadoPermisoController.buscarXEmpleado(empleado, desde, hasta, conGoce);
 
         LOG.info("VIENE AL METODO REPORTE PERM");
-        LOG.info("TAMAÃ‘O: " + permisos.size());
+        LOG.info("TAMANO: " + permisos.size());
 
         List<DetalleRegistroAsistencia> detalles;
         for (EmpleadoPermiso permiso : permisos) {
@@ -408,7 +409,7 @@ public class ReporteBean implements Serializable {
                     reporteBean.setMotivo(permiso.getPermisoId().getMotivoPermisoCodigo().getNombre());
 
                     reporte.add(reporteBean);
-                    LOG.info("REPORTE AÃ‘ADIDO");
+                    LOG.info("REPORTE ANADIDO");
 
                 }
             }

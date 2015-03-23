@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
+import javax.enterprise.context.ConversationScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.view.ViewScoped;
@@ -26,16 +27,18 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.event.UnselectEvent;
 
 @Named(value = "cambioTurnoController")
-@ViewScoped
+@ConversationScoped
 public class CambioTurnoController extends AbstractController<CambioTurno> {
 
     @EJB
     private CambioTurnoFacadeLocal cambioTurnoFacade;
 
     @EJB
-    private DetalleHorarioFacadeLocal detalleTurnoFacade;
+    private DetalleHorarioFacadeLocal detalleHorarioFacade;
 
     @EJB
     private EmpleadoHorarioFacadeLocal empleadoDAO;
@@ -55,13 +58,39 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
 
     private boolean isFechaTurno1;
     private boolean isFechaTurno2;
+    
+    private Empleado empleado1;
+    private Empleado empleado2;
+    
+    private List<DetalleHorario> horarioXFecha;
 
+    public Empleado getEmpleado1() {
+        return empleado1;
+    }
+
+    public void setEmpleado1(Empleado empleado1) {
+        LOG.info("EMPLEADO INGRESADO: "+ this.empleado1);
+        this.empleado1 = empleado1;
+    }
+
+    public Empleado getEmpleado2() {
+        return empleado2;
+    }
+
+    public void setEmpleado2(Empleado empleado2) {
+        this.empleado2 = empleado2;
+    }
+    
+    
+    
     public Date getFechaTurno1() {
         return fechaTurno1;
     }
 
     public void setFechaTurno1(Date fechaTurno1) {
         this.fechaTurno1 = fechaTurno1;
+        
+        LOG.info("FECHA1: "+fechaTurno1);
     }
 
     public Date getFechaTurno2() {
@@ -390,21 +419,32 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
         this.isFechaTurno2 = false;
     }
 
-    CambioTurnoController cambioturnoController = new CambioTurnoController();
-    EmpleadoHorarioFacade empleadoHorarioController = new EmpleadoHorarioFacade();
-    HorarioFacade horarioController = new HorarioFacade();
-    DetalleHorarioFacade dhorarioController = new DetalleHorarioFacade();
-
-    public List<EmpleadoHorario> buscarHorario(Empleado empleado) {
-        DetalleHorario hora = new DetalleHorario();
-        hora.getHorarioId().getEmpleadoHorario().getEmpleadoId();
-
-//        List<DetalleHorario> horariosXFecha = dhorarioController.buscarXEmpleadoXHorario(fechaTurno1, empleado);
-        return null;
-
+    public List<DetalleHorario> getHorarioXFecha() {
+        if(isFechaTurno1){
+            return detalleHorarioFacade.buscarXEmpleadoXFecha(empleado1, fechaTurno1);
+        }
+        return detalleHorarioFacade.findAll();
     }
 
-    public void cambiarTurno(Horario horario, EmpleadoHorario empleado1, List<EmpleadoHorario> empleado2) {
+    public void setHorarioXFecha(List<DetalleHorario> horarioXFecha) {
+        this.horarioXFecha = horarioXFecha;
+    }
+    
+    private static final java.util.logging.Logger LOG = java.util.logging.Logger.getLogger(CambioTurnoController.class.getName());
+    
+    public List<DetalleHorario> getHorarios() {
         
+        
+        if (this.isFechaTurno1 && empleado1!= null){
+            LOG.info("Lista de Horarios por Fecha, parametros:");
+            LOG.info("Empleado: "+ empleado1);
+            LOG.info("FECHA: "+ fechaTurno1);
+            
+            return this.detalleHorarioFacade.buscarXEmpleadoXFecha(empleado1, fechaTurno1);
+        } else {
+            LOG.info("LA LISTA ES NULL :c");
+            return null;
+        }
     }
+
 }
