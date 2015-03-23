@@ -124,9 +124,20 @@ public class DetalleHorarioFacade extends AbstractFacade<DetalleHorario> impleme
     }
     
     public List<DetalleHorario> buscarXHorarioXFecha(Horario horario, Date fecha){
-        String jpql = "SELECT dh FROM DetalleHorario dh WHERE dh.empleadoId = :horario AND dh.fecha = :fecha";
+        String jpql = "SELECT dh FROM DetalleHorario dh WHERE dh.horarioId = :horario AND dh.fecha = :fecha";
         Map<String,Object> mapa = new HashMap<>();
         mapa.put("horario", horario);
+        mapa.put("fecha", fecha);
+        
+        return search(jpql, mapa);
+    }
+    
+    
+    @Override
+    public List<DetalleHorario> buscarXEmpleadoXFecha2(Empleado empleado, Date fecha){
+        String jpql = "SELECT dh FROM DetalleHorario dh WHERE dh.horarioId.empleadoHorario.empleadoId = :empleado AND dh.fecha = :fecha";
+        Map<String,Object> mapa = new HashMap<>();
+        mapa.put("empleado", empleado);
         mapa.put("fecha", fecha);
         
         return search(jpql, mapa);

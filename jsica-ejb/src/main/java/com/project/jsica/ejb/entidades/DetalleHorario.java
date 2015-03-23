@@ -7,6 +7,7 @@
 package com.project.jsica.ejb.entidades;
 
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -59,6 +60,18 @@ public class DetalleHorario implements Serializable {
     @OneToMany(mappedBy = "turnoReemplazo")
     private List<RegistroAsistencia> registroList1;
 
+//    private String fechaFormat;
+
+    public String getConvertirFechaFormat() {        
+        DateFormat df = DateFormat.getDateInstance();
+        String fechaFormat = df.format(fecha);
+        return fechaFormat;
+    }
+//
+//    public void setFechaFormat(String fechaFormat) {
+//        this.fechaFormat = fechaFormat;
+//    }
+    
     @XmlTransient
     public List<RegistroAsistencia> getRegistroList() {
         return registroList;
@@ -97,7 +110,7 @@ public class DetalleHorario implements Serializable {
         this.id = id;
     }
 
-    public Date getFecha() {
+    public Date getFecha() {        
         return fecha;
     }
 
@@ -163,5 +176,6 @@ public class DetalleHorario implements Serializable {
     public String toString() {
         return fecha+"";
     }
+    
     
 }

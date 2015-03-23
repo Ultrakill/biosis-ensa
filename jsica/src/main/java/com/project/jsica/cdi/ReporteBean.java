@@ -419,7 +419,7 @@ public class ReporteBean implements Serializable {
             reporte2(reporte);
             LOG.info("XLS GENERADO");
         }
-
+        LOG.info("DEVOLVIO LA LISTA DE REPORTES");
         return reporte;
     }
     static long milisegundos_dia = 24 * 60 * 60 * 1000;

@@ -44,4 +44,6 @@ public interface DetalleHorarioFacadeLocal {
 
     public List<DetalleHorario> buscarXEmpleadoXFecha(Empleado empleado, Date fecha);
     
+    public List<DetalleHorario> buscarXEmpleadoXFecha2(Empleado empleado, Date fecha);
+    
 }
