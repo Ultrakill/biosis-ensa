@@ -23,7 +23,7 @@
                 
                 <p:outputLabel value="Boton"/>
                 
-                <p:commandButton value="Seleccionar" action="#{cambioTurnoController.horarios}" update="@empleado1"/>
+                <p:commandButton value="Seleccionar" action="#{cambioTurnoController.horarios}" update=":CambioTurnoListForm:empleado1"/>
 
                 <p:outputLabel value="Fecha Turno" for="fechaPedido1" />
                 <p:calendar id="fechaPedido1" value="#{cambioTurnoController.fechaTurno1}" pattern="dd/MM/yyyy"  title="#{myBundle.CreateCambioTurnoTitle_fechaPedido}" required="true" requiredMessage="#{myBundle.CreateCambioTurnoRequiredMessage_fechaPedido}">
