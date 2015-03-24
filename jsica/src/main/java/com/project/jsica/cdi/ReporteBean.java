@@ -10,6 +10,8 @@ import com.personal.utiles.FechaUtil;
 import com.project.algoritmo.AnalisisFinalLocal;
 import com.project.jsica.cdi.util.JsfUtil;
 import com.project.jsica.ejb.entidades.Area;
+import com.project.jsica.ejb.entidades.CambioTurno;
+import com.project.jsica.ejb.entidades.DetalleHorario;
 import com.project.jsica.ejb.entidades.DetalleRegistroAsistencia;
 import com.project.jsica.ejb.entidades.Empleado;
 import com.project.jsica.ejb.entidades.EmpleadoPermiso;
@@ -810,5 +812,88 @@ public class ReporteBean implements Serializable {
             analisisService.analizarEmpleados(areaSeleccionada);
         }
     }
-
+//    
+//    public static  List<DetalleHorario> listaAux1;
+//    public static  List<DetalleHorario> listaAux2;
+//    public static  Date fechaTurnoAux1;
+//    public static  Date fechaTurnoAux2;
+//    public static  Empleado empleadoAux1;
+//    public static  Empleado empleadoAux2;
+//    
+//    public void siNoSaleFuimos1(Empleado empleado1, Date fecha1, List<DetalleHorario> lista1){
+//        this.empleadoAux1 = empleado1;
+//        this.fechaTurnoAux1 = fecha1;
+//        this.listaAux2 = lista1;
+//    }
+//    
+//    public void siNoSaleFuimos2(Empleado empleado2, Date fecha2, List<DetalleHorario> lista2){
+//        this.empleadoAux2 = empleado2;
+//        this.fechaTurnoAux2 = fecha2;
+//        this.listaAux2 = lista2;
+//    }
+//
+//    public List analisisCambios(){
+//        LOG.info("ENTRO A CAMBIO TURNO");
+//        DetalleHorario detalleCambio1 = new DetalleHorario();
+//        DetalleHorario detalleCambio2 = new DetalleHorario();
+//
+//        List<CambioTurno> listaCambios = new ArrayList();
+//
+//        LOG.info("EMPLEADO1cambio: " + empleadoAux1);
+//        LOG.info("EMPLEADO2cambio: " + empleadoAux2);
+//
+//        if (empleadoAux1 != null && empleadoAux2 != null) {
+//
+//            LOG.info("DETALLES LLENOS");
+//
+//            Empleado empleadoCambio1 = empleadoAux1;
+//            Empleado empleadoCambio2 = empleadoAux2;
+//
+//            LOG.info("TAMAÑO DETALLE1: " + listaAux1.size());
+//            LOG.info("TAMAÑO DETALLE2: " + listaAux2.size());
+//
+//            for (DetalleHorario det1 : listaAux1) {
+//                if (det1.getFecha().equals(fechaTurnoAux1)) {
+//                    detalleCambio1 = det1;
+//                }
+//            }
+//
+//            for (DetalleHorario det2 : listaAux2) {
+//                if (det2.getFecha().equals(fechaTurnoAux2)) {
+//                    detalleCambio2 = det2;
+//                }
+//            }
+//
+//            detalleCambio1.getHorarioId().getEmpleadoHorario().setEmpleadoId(empleadoCambio2);
+//            detalleCambio2.getHorarioId().getEmpleadoHorario().setEmpleadoId(empleadoCambio1);
+//
+//            //EMPLEADO1
+//            CambioTurno cambioTurno = new CambioTurno();
+//
+//            cambioTurno.setDetalleHorarioOriginal(detalleCambio1);
+//            cambioTurno.setDetalleHorarioReemplazo(detalleCambio2);
+//            cambioTurno.setEmpleado1Id(empleadoCambio1);
+//            cambioTurno.setEmpleado2Id(empleadoCambio2);
+//            Date hora = new Date();
+//            cambioTurno.setFechaPedido(hora);
+//            cambioTurno.setHoraPedido(hora);
+//            listaCambios.add(cambioTurno);
+//
+//            //EMPLEADO2
+//            CambioTurno cambioTurno2 = new CambioTurno();
+//
+//            cambioTurno2.setDetalleHorarioOriginal(detalleCambio2);
+//            cambioTurno2.setDetalleHorarioReemplazo(detalleCambio1);
+//            cambioTurno2.setEmpleado1Id(empleadoCambio2);
+//            cambioTurno2.setEmpleado2Id(empleadoCambio1);
+//            cambioTurno2.setFechaPedido(hora);
+//            cambioTurno2.setHoraPedido(hora);
+//
+//            listaCambios.add(cambioTurno2);
+//
+//        }
+//
+//        LOG.info("TAMANO DE LISTA CAMBIOS: " + listaCambios.size());
+//        return listaCambios;
+//    }
 }

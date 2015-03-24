@@ -347,4 +347,11 @@ public class EmpleadoHorarioController extends AbstractController<EmpleadoHorari
         calendar.set(anio, mes - 1, 1);
         return calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
     }
+    
+    public List<EmpleadoHorario> buscarXHorario(Horario id){
+        String query = "SELECT e FROM EmpleadoHorario e WHERE e.horarioId = :id";
+        Map<String, Object> parametros = new HashMap<>();
+        parametros.put("id", id);
+        return this.empleadoHorarioFacade.search(query, parametros);
+    }
 }

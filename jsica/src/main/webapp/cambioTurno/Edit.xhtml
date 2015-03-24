@@ -58,7 +58,7 @@
 
                         </p:selectOneMenu>
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{cambioTurnoController.save}" value="#{myBundle.Save}" update="display,:CambioTurnoListForm:datalist,:growl" oncomplete="handleSubmit(xhr,status,args,PF('CambioTurnoEditDialog'));">
+                    <p:commandButton actionListener="#{cambioTurnoController.save}" value="#{myBundle.Save}" update="display,:growl" oncomplete="handleSubmit(xhr,status,args,PF('CambioTurnoEditDialog'));">
                         <p:confirm header="#{myBundle.ConfirmationHeader}" message="#{myBundle.ConfirmEditMessage}" icon="ui-icon-alert"/>
                     </p:commandButton>
                     <p:commandButton value="#{myBundle.Cancel}" onclick="PF('CambioTurnoEditDialog').hide()"/>

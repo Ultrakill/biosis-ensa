@@ -48,9 +48,9 @@ public abstract class AbstractFacade<T> implements Serializable {
     }
 
     public void edit(T entity) {
-        try {
-            LOG.info("SE EDITA LA ENTIDAD");
+        try {            
             getEntityManager().merge(entity);
+            LOG.info("SE EDITA LA ENTIDAD");
         } catch (Exception e) {
             LOG.warn(e);
         }
@@ -63,6 +63,7 @@ public abstract class AbstractFacade<T> implements Serializable {
     }
 
     public T find(Object id) {
+        LOG.info("FIN ESTO: "+id);
         return getEntityManager().find(entityClass, id);
     }
 

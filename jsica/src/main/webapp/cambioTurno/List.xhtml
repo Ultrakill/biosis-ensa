@@ -20,16 +20,16 @@
                                 required="true"
                                 requiredMessage="Seleccione el empleado"
                                 size="55" >
-                
+
                     <p:ajax event="itemSelect" listener="#{cambioTurnoController.onEmpleadoSelecciona1()}"  update=":CambioTurnoListForm:turno1"/>
                 </p:autoComplete>
 
                 <p:outputLabel value="Fecha Turno" for="fechaPedido1" />
                 <p:calendar id="fechaPedido1" value="#{cambioTurnoController.fechaTurno1}" pattern="dd/MM/yyyy"  title="#{myBundle.CreateCambioTurnoTitle_fechaPedido}" required="true" requiredMessage="#{myBundle.CreateCambioTurnoRequiredMessage_fechaPedido}">
-                    
+
                     <p:ajax event="dateSelect" listener="#{cambioTurnoController.onFechaSelecciona1}" update=":CambioTurnoListForm:turno1"/>
                 </p:calendar>
-                
+
                 <p:outputLabel value="Turno" for="turno1"/>
                 <p:selectOneMenu id="turno1" value="#{cambioTurnoController.selected.detalleHorarioOriginal}" 
                                  required="true" requiredMessage="Seleccionar Turno" 
@@ -41,9 +41,9 @@
                                    itemLabel="#{turno.convertirFechaFormat}"                            
                                    />
                 </p:selectOneMenu>
-                
-                
-                
+
+
+
                 <p:outputLabel value="Empleado que acepta cambio:"/>
                 <p:autoComplete id="empleado2" value="#{cambioTurnoController.setEmpleado2(empleado2)}" 
                                 var="empleado"
@@ -54,16 +54,16 @@
                                 required="true"
                                 requiredMessage="Seleccione el empleado"
                                 size="55" >
-                
+
                     <p:ajax event="itemSelect" listener="#{cambioTurnoController.onEmpleadoSelecciona2()}"  update=":CambioTurnoListForm:turno2"/>
                 </p:autoComplete>
 
                 <p:outputLabel value="Fecha Turno" for="fechaPedido2" />
                 <p:calendar id="fechaPedido2" value="#{cambioTurnoController.fechaTurno2}" pattern="dd/MM/yyyy"  title="#{myBundle.CreateCambioTurnoTitle_fechaPedido}" required="true" requiredMessage="#{myBundle.CreateCambioTurnoRequiredMessage_fechaPedido}">
-                    
+
                     <p:ajax event="dateSelect" listener="#{cambioTurnoController.onFechaSelecciona2}" update=":CambioTurnoListForm:turno2"/>
                 </p:calendar>
-                
+
                 <p:outputLabel value="Turno" for="turno2"/>
                 <p:selectOneMenu id="turno2" value="#{cambioTurnoController.selected.detalleHorarioReemplazo}" 
                                  required="true" requiredMessage="Seleccionar Turno" 
@@ -75,70 +75,70 @@
                                    itemLabel="#{turno.convertirFechaFormat}"                            
                                    />
                 </p:selectOneMenu>
+                <p:commandButton value="Realizar cambio"  update="datalist"/>
             </p:panelGrid>
+            <p:ajaxStatus style="display:block;margin-bottom:2em;height:24px;">
+                <f:facet name="start">
+                    <h:outputLabel value="Espere un momento..." />
+                </f:facet>
+            </p:ajaxStatus>
         </p:panel>
-            
-        <p:panel header="#{myBundle.ListCambioTurnoTitle}">
-            <p:dataTable id="datalist"
-                         value="#{cambioTurnoController.items}"
-                         var="item"
-                         rowKey="#{item.id}"
-                         paginator="true"
-                         paginatorPosition="bottom"
-                         rows="10"
-                         rowsPerPageTemplate="10,20,30,40,50"
-                         selectionMode="single"
-                         selection="#{cambioTurnoController.selected}">
+        
+        <p:panel header="Resultado">
+                        <p:dataTable
+                            id="datalist"
+                            value="#{cambioTurnoController.cambioTurno}"
+                            var="cambioTurno"
+                            rowKey="#{cambioTurno}"
+                            paginator="true"
+                            emptyMessage="No hay datos">
+                            
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Hora Pedido"/>
+                                </f:facet>
+                                <h:outputText value="#{cambioTurno.horaPedido}">
+                                    <f:convertDateTime pattern="HH:mm" />
+                                </h:outputText>
+                            </p:column>
 
-                
-                <p:column >
-                    <f:facet name="header">
-                        <h:outputText value="#{myBundle.ListCambioTurnoTitle_fechaPedido}"/>
-                    </f:facet>
-                    <h:outputText value="#{item.fechaPedido}">
-                        <f:convertDateTime pattern="dd/MM/yyyy" />
-                    </h:outputText>
-                </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Fecha Pedido"/>
+                                </f:facet>
+                                <h:outputText value="#{cambioTurno.fechaPedido}">
+                                    <f:convertDateTime pattern="dd-MM-yyyy" />
+                                </h:outputText>
+                            </p:column>
 
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Horario Original"/>
+                                </f:facet>
+                                <h:outputText value="#{cambioTurno.detalleHorarioOriginal.fecha}">
+                                    <f:convertDateTime pattern="dd-MM-yyyy" />
+                                </h:outputText>
+                            </p:column>
 
-                <p:column >
-                    <f:facet name="header">
-                        <h:outputText value="#{myBundle.ListCambioTurnoTitle_horaPedido}"/>
-                    </f:facet>
-                    <h:outputText value="#{item.horaPedido}">
-                        <f:convertDateTime pattern="HH:mm:ss" />
-                    </h:outputText>
-                </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Horario Reemplazo"/>
+                                </f:facet>
+                                <h:outputText value="#{cambioTurno.detalleHorarioReemplazo.fecha}">
+                                    <f:convertDateTime pattern="dd-MM-yyyy" />
+                                </h:outputText>
+                            </p:column>
 
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Empleado"/>
+                                </f:facet>
+                                <h:outputText value="#{cambioTurno.empleado1Id.nombres}">
+                                </h:outputText>
+                            </p:column>
 
-                <p:column >
-                    <f:facet name="header">
-                        <h:outputText value="#{myBundle.ListCambioTurnoTitle_detalleHorarioOriginal}"/>
-                    </f:facet>
-                    <h:outputText value="#{item.detalleHorarioOriginal.id}"/>
-                </p:column>
-
-
-                <p:column>
-                    <f:facet name="header">
-                        <h:outputText value="#{myBundle.ListCambioTurnoTitle_detalleHorarioReemplazo}"/>
-                    </f:facet>
-                    <h:outputText value="#{item.detalleHorarioReemplazo.id}"/>
-                </p:column>
-
-
-                <p:column >
-                    <f:facet name="header">
-                        <h:outputText value="#{myBundle.ListCambioTurnoTitle_jefeInmediatoId}"/>
-                    </f:facet>
-                    <h:outputText value="#{item.jefeInmediatoId.apellidos} #{item.jefeInmediatoId.nombres}"/>
-                </p:column>
-
-
-            </p:dataTable>            
-
-        </p:panel>
-        <ui:include src="/confirmation.xhtml"/>
+                        </p:dataTable>
+                    </p:panel>
     </h:form>
 
 </ui:composition>

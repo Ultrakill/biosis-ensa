@@ -15,6 +15,7 @@ import dao.EmpleadoHorarioFacadeLocal;
 import dao.HorarioFacade;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +33,7 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
 
 @Named(value = "cambioTurnoController")
-@ConversationScoped
+@ViewScoped
 public class CambioTurnoController extends AbstractController<CambioTurno> {
 
     @EJB
@@ -52,17 +53,24 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
     @Inject
     private DetalleHorarioController detalleHorarioReemplazoController;
     @Inject
+    private DetalleHorarioController detalleHorario;
+    @Inject
     private EmpleadoController jefeInmediatoIdController;
+    @Inject
+    private CambioTurnoController cambioTurnoControl;
+
+    @Inject
+    private EmpleadoHorarioController empleadoHorarioControl;
 
     private Date fechaTurno1;
     private Date fechaTurno2;
 
     private boolean isFechaTurno1;
     private boolean isFechaTurno2;
-    
+
     private Empleado empleado1;
     private Empleado empleado2;
-    
+
     private List<DetalleHorario> horarioXFecha;
     private boolean isEmpleado1;
     private boolean isEmpleado2;
@@ -72,9 +80,9 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
     }
 
     public void setEmpleado1(Empleado empleado1) {
-        
+
         this.empleado1 = empleado1;
-        LOG.info("EMPLEADO INGRESADO: "+ this.empleado1);
+        LOG.info("EMPLEADO INGRESADO: " + this.empleado1);
     }
 
     public Empleado getEmpleado2() {
@@ -84,17 +92,15 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
     public void setEmpleado2(Empleado empleado2) {
         this.empleado2 = empleado2;
     }
-    
-    
-    
+
     public Date getFechaTurno1() {
         return fechaTurno1;
     }
 
     public void setFechaTurno1(Date fechaTurno1) {
         this.fechaTurno1 = fechaTurno1;
-        
-        LOG.info("FECHA1: "+this.fechaTurno1);
+
+        LOG.info("FECHA1: " + this.fechaTurno1);
     }
 
     public Date getFechaTurno2() {
@@ -178,176 +184,176 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
     protected void edit(CambioTurno objeto) {
 
         this.cambioTurnoFacade.edit(objeto);
-        if (this.esNuevo) {
-            Bitacora bitacora = new Bitacora();
-            //----Bitacora----
-            //Fecha y hora//          
-            Date fechas = new Date();
-//            System.out.println("fecha: "+dt.format(fechas));
-//           
-            //Ip Cliente
-            String ip_cliente = ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).getRemoteAddr();
-
-            String detalle_horario_original = this.selected.getDetalleHorarioOriginal().toString();
-            String detalle_horario_reemplazo = this.selected.getDetalleHorarioReemplazo().toString();
-            String fecha_pedido = this.selected.getFechaPedido().toString();
-            String hora_pedido = this.selected.getHoraPedido().toString();
-            String jefe_inmediato_id = this.selected.getJefeInmediatoId().getApellidos() + ", " + this.selected.getJefeInmediatoId().getNombres();
-
-            bitacora.setUsuario("JC");
-            bitacora.setIpCliente(ip_cliente);
-            bitacora.setFecha(fechas);
-            bitacora.setHora(fechas);
-            bitacora.setTabla("CAMBIO_TURNO");
-            bitacora.setColumna("DETALLE_HORARIO_ORIGINAL");
-            bitacora.setAccion("CREAR");
-            bitacora.setValorAct(detalle_horario_original);
-            bitacora.setValorAnt(" ");
-            bitacoraC.edit(bitacora);
-
-            bitacora.setColumna("DETALLE_HORARIO_REEMPLAZO");
-            bitacora.setValorAct(detalle_horario_reemplazo);
-            bitacora.setValorAnt(" ");
-            bitacoraC.edit(bitacora);
-
-            bitacora.setColumna("FECHA_PEDIDO");
-            bitacora.setValorAct(fecha_pedido);
-            bitacora.setValorAnt(" ");
-            bitacoraC.edit(bitacora);
-
-            bitacora.setColumna("HORA_PEDIDO");
-            bitacora.setValorAct(hora_pedido);
-            bitacora.setValorAnt(" ");
-            bitacoraC.edit(bitacora);
-
-            bitacora.setColumna("JEFE_INMEDIATO");
-            bitacora.setValorAct(jefe_inmediato_id);
-            bitacora.setValorAnt(" ");
-            bitacoraC.edit(bitacora);
-
-        } else {
-            //Datos antes de modificar
-            CambioTurno antes = this.find(this.selected.getId());
-            String detalle_horario_original1 = antes.getDetalleHorarioOriginal().toString();
-            String detalle_horario_reemplazo1 = antes.getDetalleHorarioReemplazo().toString();
-            String fecha_pedido1 = antes.getFechaPedido().toString();
-            String hora_pedido1 = antes.getHoraPedido().toString();
-            String jefe_inmediato_id1 = antes.getJefeInmediatoId().getApellidos() + ", " + this.selected.getJefeInmediatoId().getNombres();
-
-            //Datos despues de modificar
-            String detalle_horario_original2 = this.selected.getDetalleHorarioOriginal().toString();
-            String detalle_horario_reemplazo2 = this.selected.getDetalleHorarioReemplazo().toString();
-            String fecha_pedido2 = this.selected.getFechaPedido().toString();
-            String hora_pedido2 = this.selected.getHoraPedido().toString();
-            String jefe_inmediato_id2 = this.selected.getJefeInmediatoId().getApellidos() + ", " + this.selected.getJefeInmediatoId().getNombres();
-
-            //----Bitacora----
-            Bitacora bitacora = new Bitacora();
-            //Fecha y hora//          
-            Date fechas = new Date();
-
-            //Ip Cliente
-            String ip_cliente = ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).getRemoteAddr();
-
-            //Datos
-            bitacora.setUsuario("JC");
-            bitacora.setIpCliente(ip_cliente);
-            bitacora.setFecha(fechas);
-            bitacora.setHora(fechas);
-            bitacora.setTabla("BIOMETRICO");
-            bitacora.setColumna("DETALLE_HORARIO_ORIGINAL");
-            bitacora.setAccion("MODIFICAR");
-            bitacora.setValorAnt(detalle_horario_original1);
-            bitacora.setValorAct(detalle_horario_original2);
-
-            if (!detalle_horario_original1.equals(detalle_horario_original2)) {
-                bitacoraC.edit(bitacora);
-            }
-
-            bitacora.setColumna("DETALLE_HORARIO_REEMPLAZO");
-            bitacora.setValorAnt(detalle_horario_reemplazo1);
-            bitacora.setValorAct(detalle_horario_reemplazo2);
-
-            if (!detalle_horario_reemplazo1.equals(detalle_horario_reemplazo2)) {
-                bitacoraC.edit(bitacora);
-            }
-
-//            System.out.println(anio1+" "+nombre1+" "+vigente1);
-            bitacora.setColumna("FECHA_PEDIDO");
-            bitacora.setValorAnt(fecha_pedido1);
-            bitacora.setValorAct(fecha_pedido2);
-
-            if (!fecha_pedido1.equals(fecha_pedido2)) {
-                bitacoraC.edit(bitacora);
-            }
-
-            bitacora.setColumna("HORA_PEDIDO");
-            bitacora.setValorAnt(hora_pedido1);
-            bitacora.setValorAct(hora_pedido2);
-
-            if (!hora_pedido1.equals(hora_pedido2)) {
-                bitacoraC.edit(bitacora);
-            }
-
-            bitacora.setColumna("JEFE_INMEDIATO");
-            bitacora.setValorAnt(jefe_inmediato_id1);
-            bitacora.setValorAct(jefe_inmediato_id2);
-
-            if (!jefe_inmediato_id1.equals(jefe_inmediato_id2)) {
-                bitacoraC.edit(bitacora);
-            }
-
-        }
+//        if (this.esNuevo) {
+//            Bitacora bitacora = new Bitacora();
+//            //----Bitacora----
+//            //Fecha y hora//          
+//            Date fechas = new Date();
+////            System.out.println("fecha: "+dt.format(fechas));
+////           
+//            //Ip Cliente
+//            String ip_cliente = ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).getRemoteAddr();
+//
+//            String detalle_horario_original = this.selected.getDetalleHorarioOriginal().toString();
+//            String detalle_horario_reemplazo = this.selected.getDetalleHorarioReemplazo().toString();
+//            String fecha_pedido = this.selected.getFechaPedido().toString();
+//            String hora_pedido = this.selected.getHoraPedido().toString();
+//            String jefe_inmediato_id = this.selected.getJefeInmediatoId().getApellidos() + ", " + this.selected.getJefeInmediatoId().getNombres();
+//
+//            bitacora.setUsuario("JC");
+//            bitacora.setIpCliente(ip_cliente);
+//            bitacora.setFecha(fechas);
+//            bitacora.setHora(fechas);
+//            bitacora.setTabla("CAMBIO_TURNO");
+//            bitacora.setColumna("DETALLE_HORARIO_ORIGINAL");
+//            bitacora.setAccion("CREAR");
+//            bitacora.setValorAct(detalle_horario_original);
+//            bitacora.setValorAnt(" ");
+//            bitacoraC.edit(bitacora);
+//
+//            bitacora.setColumna("DETALLE_HORARIO_REEMPLAZO");
+//            bitacora.setValorAct(detalle_horario_reemplazo);
+//            bitacora.setValorAnt(" ");
+//            bitacoraC.edit(bitacora);
+//
+//            bitacora.setColumna("FECHA_PEDIDO");
+//            bitacora.setValorAct(fecha_pedido);
+//            bitacora.setValorAnt(" ");
+//            bitacoraC.edit(bitacora);
+//
+//            bitacora.setColumna("HORA_PEDIDO");
+//            bitacora.setValorAct(hora_pedido);
+//            bitacora.setValorAnt(" ");
+//            bitacoraC.edit(bitacora);
+//
+//            bitacora.setColumna("JEFE_INMEDIATO");
+//            bitacora.setValorAct(jefe_inmediato_id);
+//            bitacora.setValorAnt(" ");
+//            bitacoraC.edit(bitacora);
+//
+//        } else {
+//            //Datos antes de modificar
+//            CambioTurno antes = this.find(this.selected.getId());
+//            String detalle_horario_original1 = antes.getDetalleHorarioOriginal().toString();
+//            String detalle_horario_reemplazo1 = antes.getDetalleHorarioReemplazo().toString();
+//            String fecha_pedido1 = antes.getFechaPedido().toString();
+//            String hora_pedido1 = antes.getHoraPedido().toString();
+//            String jefe_inmediato_id1 = antes.getJefeInmediatoId().getApellidos() + ", " + this.selected.getJefeInmediatoId().getNombres();
+//
+//            //Datos despues de modificar
+//            String detalle_horario_original2 = this.selected.getDetalleHorarioOriginal().toString();
+//            String detalle_horario_reemplazo2 = this.selected.getDetalleHorarioReemplazo().toString();
+//            String fecha_pedido2 = this.selected.getFechaPedido().toString();
+//            String hora_pedido2 = this.selected.getHoraPedido().toString();
+//            String jefe_inmediato_id2 = this.selected.getJefeInmediatoId().getApellidos() + ", " + this.selected.getJefeInmediatoId().getNombres();
+//
+//            //----Bitacora----
+//            Bitacora bitacora = new Bitacora();
+//            //Fecha y hora//          
+//            Date fechas = new Date();
+//
+//            //Ip Cliente
+//            String ip_cliente = ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).getRemoteAddr();
+//
+//            //Datos
+//            bitacora.setUsuario("JC");
+//            bitacora.setIpCliente(ip_cliente);
+//            bitacora.setFecha(fechas);
+//            bitacora.setHora(fechas);
+//            bitacora.setTabla("BIOMETRICO");
+//            bitacora.setColumna("DETALLE_HORARIO_ORIGINAL");
+//            bitacora.setAccion("MODIFICAR");
+//            bitacora.setValorAnt(detalle_horario_original1);
+//            bitacora.setValorAct(detalle_horario_original2);
+//
+//            if (!detalle_horario_original1.equals(detalle_horario_original2)) {
+//                bitacoraC.edit(bitacora);
+//            }
+//
+//            bitacora.setColumna("DETALLE_HORARIO_REEMPLAZO");
+//            bitacora.setValorAnt(detalle_horario_reemplazo1);
+//            bitacora.setValorAct(detalle_horario_reemplazo2);
+//
+//            if (!detalle_horario_reemplazo1.equals(detalle_horario_reemplazo2)) {
+//                bitacoraC.edit(bitacora);
+//            }
+//
+////            System.out.println(anio1+" "+nombre1+" "+vigente1);
+//            bitacora.setColumna("FECHA_PEDIDO");
+//            bitacora.setValorAnt(fecha_pedido1);
+//            bitacora.setValorAct(fecha_pedido2);
+//
+//            if (!fecha_pedido1.equals(fecha_pedido2)) {
+//                bitacoraC.edit(bitacora);
+//            }
+//
+//            bitacora.setColumna("HORA_PEDIDO");
+//            bitacora.setValorAnt(hora_pedido1);
+//            bitacora.setValorAct(hora_pedido2);
+//
+//            if (!hora_pedido1.equals(hora_pedido2)) {
+//                bitacoraC.edit(bitacora);
+//            }
+//
+//            bitacora.setColumna("JEFE_INMEDIATO");
+//            bitacora.setValorAnt(jefe_inmediato_id1);
+//            bitacora.setValorAct(jefe_inmediato_id2);
+//
+//            if (!jefe_inmediato_id1.equals(jefe_inmediato_id2)) {
+//                bitacoraC.edit(bitacora);
+//            }
+//
+//        }
     }
 
     @Override
     protected void remove(CambioTurno objeto) {
-        Bitacora bitacora = new Bitacora();
-        //----Bitacora----
-        //Fecha y hora//          
-        Date fechas = new Date();
-
-        //Ip Cliente
-        String ip_cliente = ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).getRemoteAddr();
-
-        //Campos
-        String detalle_horario_original1 = this.selected.getDetalleHorarioOriginal().toString();
-        String detalle_horario_reemplazo1 = this.selected.getDetalleHorarioReemplazo().toString();
-        String fecha_pedido1 = this.selected.getFechaPedido().toString();
-        String hora_pedido1 = this.selected.getHoraPedido().toString();
-        String jefe_inmediato_id1 = this.selected.getJefeInmediatoId().getApellidos() + ", " + this.selected.getJefeInmediatoId().getNombres();
-
-        bitacora.setUsuario(" ");
-        bitacora.setIpCliente(ip_cliente);
-        Logger.getLogger(AnioController.class.getName()).info("la ip es " + ip_cliente);
-        bitacora.setFecha(fechas);
-        bitacora.setHora(fechas);
-        bitacora.setTabla("CAMBIO_TURNO");
-        bitacora.setColumna("DETALLE_HORARIO_ORIGINAL");
-        bitacora.setAccion("CREAR");
-        bitacora.setValorAnt(detalle_horario_original1);
-        bitacora.setValorAct(" ");
-        bitacoraC.edit(bitacora);
-
-        bitacora.setColumna("DETALLE_HORARIO_REEMPLAZO");
-        bitacora.setValorAnt(detalle_horario_reemplazo1);
-        bitacora.setValorAct(" ");
-        bitacoraC.edit(bitacora);
-
-        bitacora.setColumna("FECHA_PEDIDO");
-        bitacora.setValorAnt(fecha_pedido1);
-        bitacora.setValorAct(" ");
-        bitacoraC.edit(bitacora);
-
-        bitacora.setColumna("HORA_PEDIDO");
-        bitacora.setValorAnt(hora_pedido1);
-        bitacora.setValorAct(" ");
-        bitacoraC.edit(bitacora);
-
-        bitacora.setColumna("JEFE_INMEDIATO");
-        bitacora.setValorAnt(jefe_inmediato_id1);
-        bitacora.setValorAct(" ");
-        bitacoraC.edit(bitacora);
+//        Bitacora bitacora = new Bitacora();
+//        //----Bitacora----
+//        //Fecha y hora//          
+//        Date fechas = new Date();
+//
+//        //Ip Cliente
+//        String ip_cliente = ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).getRemoteAddr();
+//
+//        //Campos
+//        String detalle_horario_original1 = this.selected.getDetalleHorarioOriginal().toString();
+//        String detalle_horario_reemplazo1 = this.selected.getDetalleHorarioReemplazo().toString();
+//        String fecha_pedido1 = this.selected.getFechaPedido().toString();
+//        String hora_pedido1 = this.selected.getHoraPedido().toString();
+//        String jefe_inmediato_id1 = this.selected.getJefeInmediatoId().getApellidos() + ", " + this.selected.getJefeInmediatoId().getNombres();
+//
+//        bitacora.setUsuario(" ");
+//        bitacora.setIpCliente(ip_cliente);
+//        Logger.getLogger(AnioController.class.getName()).info("la ip es " + ip_cliente);
+//        bitacora.setFecha(fechas);
+//        bitacora.setHora(fechas);
+//        bitacora.setTabla("CAMBIO_TURNO");
+//        bitacora.setColumna("DETALLE_HORARIO_ORIGINAL");
+//        bitacora.setAccion("CREAR");
+//        bitacora.setValorAnt(detalle_horario_original1);
+//        bitacora.setValorAct(" ");
+//        bitacoraC.edit(bitacora);
+//
+//        bitacora.setColumna("DETALLE_HORARIO_REEMPLAZO");
+//        bitacora.setValorAnt(detalle_horario_reemplazo1);
+//        bitacora.setValorAct(" ");
+//        bitacoraC.edit(bitacora);
+//
+//        bitacora.setColumna("FECHA_PEDIDO");
+//        bitacora.setValorAnt(fecha_pedido1);
+//        bitacora.setValorAct(" ");
+//        bitacoraC.edit(bitacora);
+//
+//        bitacora.setColumna("HORA_PEDIDO");
+//        bitacora.setValorAnt(hora_pedido1);
+//        bitacora.setValorAct(" ");
+//        bitacoraC.edit(bitacora);
+//
+//        bitacora.setColumna("JEFE_INMEDIATO");
+//        bitacora.setValorAnt(jefe_inmediato_id1);
+//        bitacora.setValorAct(" ");
+//        bitacoraC.edit(bitacora);
 
         this.cambioTurnoFacade.remove(objeto);
     }
@@ -406,7 +412,7 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
 
         return resultado;
     }
-    
+
     public void onEmpleadoSelecciona1() {
         if (this.empleado1 != null) {
             this.isEmpleado1 = true;
@@ -414,7 +420,7 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
         }
         this.isEmpleado1 = false;
     }
-    
+
     public void onEmpleadoSelecciona2() {
         if (this.empleado2 != null) {
             this.isEmpleado2 = true;
@@ -440,7 +446,7 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
     }
 
     public List<DetalleHorario> getHorarioXFecha() {
-        if(isFechaTurno1){
+        if (isFechaTurno1) {
             return detalleHorarioFacade.buscarXEmpleadoXFecha(empleado1, fechaTurno1);
         }
         return detalleHorarioFacade.findAll();
@@ -449,38 +455,181 @@ public class CambioTurnoController extends AbstractController<CambioTurno> {
     public void setHorarioXFecha(List<DetalleHorario> horarioXFecha) {
         this.horarioXFecha = horarioXFecha;
     }
-    
+
     private static final java.util.logging.Logger LOG = java.util.logging.Logger.getLogger(CambioTurnoController.class.getName());
-    
+
+    List<DetalleHorario> detalle1 = new ArrayList();
+
+    List<DetalleHorario> listaAux1;
+    List<DetalleHorario> listaAux2;
+    Date fechaTurnoAux1;
+    Date fechaTurnoAux2;
+    Empleado empleadoAux1;
+    Empleado empleadoAux2;
+
+    private boolean flag = false;
+
     public List<DetalleHorario> getHorarios1() {
-        
+
         this.empleado1 = empleadoDesesperacion;
-        LOG.info("EMPLEADO D: "+ empleadoDesesperacion);
-        if (this.isFechaTurno1 && this.empleado1 != null){
+        LOG.info("EMPLEADO 1: " + this.empleado1);
+        if (fechaTurno1 != null && empleado1 != null) {
+            fechaTurnoAux1 = fechaTurno1;
+            empleadoAux1 = empleado1;
             LOG.info("Lista de Horarios por Fecha, parametros:");
-            LOG.info("Empleado: "+ empleado1);
-            LOG.info("FECHA: "+ fechaTurno1);
-            return this.detalleHorarioFacade.buscarXEmpleadoXFecha(empleado1, fechaTurno1);
+            LOG.info("Empleado: " + empleadoAux1);
+            LOG.info("FECHA: " + fechaTurnoAux1);
+            detalle1 = this.detalleHorarioFacade.buscarXEmpleadoXFecha(empleadoAux1, fechaTurnoAux1);
+            listaAux1 = detalle1;
+            LOG.info("TAMAÑO detalle1: " + listaAux1.size());
+            return detalle1;
 //            return this.detalleHorarioFacade.buscarXEmpleadoXFecha2(empleado1, fechaTurno1);
         } else {
             LOG.info("LA LISTA ES NULL :c");
-            return null;
+            return detalle1;
         }
     }
-    
-    public List<DetalleHorario> getHorarios2() {   
+
+    private List<DetalleHorario> detalle2 = new ArrayList();
+
+    public List<DetalleHorario> getHorarios2() {
         this.empleado2 = empleadoDesesperacion;
-        LOG.info("EMPLEADO2 D: "+ empleadoDesesperacion);
-        if (this.isFechaTurno2 && this.empleado2 != null){
+        LOG.info("EMPLEADO2 : " + this.empleado2);
+
+        if (fechaTurno2 != null && this.empleado2 != null) {
+
+            fechaTurnoAux2 = fechaTurno2;
+            empleadoAux2 = empleado2;
             LOG.info("Lista de Horarios por Fecha, parametros:");
-            LOG.info("Empleado2: "+ empleado2);
-            LOG.info("FECHA2: "+ fechaTurno2);
-            return this.detalleHorarioFacade.buscarXEmpleadoXFecha(empleado2, fechaTurno2);
+            LOG.info("Empleado2: " + empleadoAux2);
+            LOG.info("FECHA2: " + fechaTurnoAux2);
+            detalle2 = this.detalleHorarioFacade.buscarXEmpleadoXFecha(empleadoAux2, fechaTurnoAux2);
+            listaAux2 = detalle2;
+            LOG.info("TAMAÑO detalle2: " + listaAux2.size());
+            return detalle2;
 //            return this.detalleHorarioFacade.buscarXEmpleadoXFecha2(empleado2, fechaTurno2);
         } else {
             LOG.info("LA LISTA 2 ES NULL :c");
-            return null;
+            return detalle2;
         }
+    }
+
+    List<CambioTurno> listaCambios = new ArrayList();
+
+    public List getCambioTurno() {
+        LOG.info("ENTRO A CAMBIO TURNO");
+        DetalleHorario detalleCambio1 = new DetalleHorario();
+        DetalleHorario detalleCambio2 = new DetalleHorario();
+
+//        List<CambioTurno> listaCambios = new ArrayList();
+
+        LOG.info("EMPLEADO1cambio: " + empleadoAux1);
+        LOG.info("EMPLEADO2cambio: " + empleadoAux2);
+
+        LOG.info("FLAG: " + flag);
+
+        if (empleadoAux1 != null && empleadoAux2 != null && !flag) {
+
+            LOG.info("DETALLES LLENOS");
+
+            Empleado empleadoCambio1 = empleadoAux1;
+            Empleado empleadoCambio2 = empleadoAux2;
+
+            LOG.info("TAMAÑO DETALLE1: " + listaAux1.size());
+            LOG.info("TAMAÑO DETALLE2: " + listaAux2.size());
+
+            for (DetalleHorario det1 : listaAux1) {
+                if (det1.getFecha().equals(fechaTurnoAux1)) {
+                    detalleCambio1 = det1;
+                }
+            }
+
+            for (DetalleHorario det2 : listaAux2) {
+                if (det2.getFecha().equals(fechaTurnoAux2)) {
+                    detalleCambio2 = det2;
+                }
+            }
+            
+            Horario horariocambio1 = detalleCambio1.getHorarioId();
+            Horario horariocambio2 = detalleCambio2.getHorarioId();
+            
+            LOG.info("Empleado Original del detalle1: " + detalleCambio1.getHorarioId().getEmpleadoHorario().getEmpleadoId().getNombreCompleto());
+            detalleCambio1.setHorarioId(horariocambio2);
+            detalleHorario.setSelected(detalleCambio1);
+            detalleHorario.edit(detalleCambio1);            
+            LOG.info("Empleado Reemplazo del detalle1: " + detalleCambio1.getHorarioId().getEmpleadoHorario().getEmpleadoId().getNombreCompleto());
+            LOG.info("SE MODIFICO DETALLE1");
+            
+            
+            detalleCambio2.setHorarioId(horariocambio1);
+            detalleHorario.setSelected(detalleCambio2);
+            detalleHorario.edit(detalleCambio2); 
+            LOG.info("SE MODIFICO DETALLE2");
+            
+
+//            detalleCambio1.getHorarioId().getEmpleadoHorario().setEmpleadoId(empleadoCambio2);
+//            List<EmpleadoHorario> empH = empleadoHorarioControl.buscarXHorario(detalleCambio1.getHorarioId());
+//            LOG.info(empH.get(0).getEmpleadoId().getDocIdentidad());
+
+//            empleadoHorarioControl.setSelected(empH.get(0));
+//            empH.get(0).setEmpleadoId(empleadoCambio2);
+//            empleadoHorarioControl.edit(empH.get(0));
+//            
+            
+//            List<EmpleadoHorario> empH2 = empleadoHorarioControl.buscarXHorario(detalleCambio1.getHorarioId());
+//            LOG.info(empH2.get(0).getEmpleadoId().getDocIdentidad());
+            
+
+//            detalleCambio2.getHorarioId().getEmpleadoHorario().setEmpleadoId(empleadoCambio1);
+//            detalleHorario.setSelected(detalleCambio2);
+//            detalleHorario.edit(detalleCambio2);
+//            List<EmpleadoHorario> empH3 = empleadoHorarioControl.buscarXHorario(detalleCambio2.getHorarioId());
+//            empleadoHorarioControl.setSelected(empH3.get(0));
+//            empH3.get(0).setEmpleadoId(empleadoCambio1);
+//            empleadoHorarioControl.edit(empH3.get(0));
+            
+
+            //EMPLEADO1
+            CambioTurno cambioTurno = new CambioTurno();
+
+            cambioTurno.setDetalleHorarioOriginal(detalleCambio1);
+            cambioTurno.setDetalleHorarioReemplazo(detalleCambio2);
+            cambioTurno.setEmpleado1Id(empleadoCambio1);
+            cambioTurno.setEmpleado2Id(empleadoCambio2);
+            Date hora = new Date();
+            cambioTurno.setFechaPedido(hora);
+            cambioTurno.setHoraPedido(hora);
+            cambioTurno.setJefeInmediatoId(empleado1);
+            LOG.info("CAMBIO TURNO1: " + cambioTurno);
+            cambioTurnoControl.setSelected(cambioTurno);
+            LOG.info("LO SETEO1");
+            cambioTurnoControl.edit(cambioTurno);
+            LOG.info("Y LO GUARDO1");
+            listaCambios.add(cambioTurno);
+
+            //EMPLEADO2
+            CambioTurno cambioTurno2 = new CambioTurno();
+
+            cambioTurno2.setDetalleHorarioOriginal(detalleCambio2);
+            cambioTurno2.setDetalleHorarioReemplazo(detalleCambio1);
+            cambioTurno2.setEmpleado1Id(empleadoCambio2);
+            cambioTurno2.setEmpleado2Id(empleadoCambio1);
+            cambioTurno2.setFechaPedido(hora);
+            cambioTurno2.setHoraPedido(hora);
+            LOG.info("CAMBIO TURNO2: " + cambioTurno2);
+            LOG.info("LO SETEO2");
+            cambioTurnoControl.setSelected(cambioTurno2);
+            cambioTurnoControl.edit(cambioTurno2);
+            LOG.info("Y LO GUARDO2");
+
+            listaCambios.add(cambioTurno2);
+
+            flag = true;
+            LOG.info("FLAG: " + flag);
+        }
+
+        LOG.info("TAMANO DE LISTA CAMBIOS: " + listaCambios.size());
+        return listaCambios;
     }
 
 }
