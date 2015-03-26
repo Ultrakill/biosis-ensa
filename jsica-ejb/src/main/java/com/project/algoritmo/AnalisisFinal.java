@@ -310,7 +310,7 @@ public class AnalisisFinal implements AnalisisFinalLocal {
                                     empleado,
                                     registro,
                                     fInicio,
-                                    fFin,
+                                    fInicio,
                                     desde,
                                     tolerancia,
                                     entradaMax,
@@ -321,6 +321,7 @@ public class AnalisisFinal implements AnalisisFinalLocal {
 
                             registro.setDetalleRegistroAsistenciaList(detalles);
                             registro.setTipo(detalleTurno.getResultado());
+                            registro.setMilisTardanzaTotal(detalleTurno.getMilisegundosTardanza() == null ? 0 :detalleTurno.getMilisegundosTardanza());
 
                             if (registro != null) {
                                 registro.setTurnoOriginal(turno);
@@ -440,9 +441,14 @@ public class AnalisisFinal implements AnalisisFinalLocal {
         detalle.setRegistroAsistencia(registro);
 
         Marcacion marcacionInicio = marcacionControlador.buscarXFechaXhora(empleadoId, fechaInicio, turnoDesde, turnoMaximaEntrada);
+        if(marcacionInicio != null){
+            LOG.info(String.format("MARCACION INICIO: %s %s", marcacionInicio.getFecha(),marcacionInicio.getHora()));
+        }
+        
         char resultadoInicio;
         detalle.setFechaInicio(fechaInicio);
         if (marcacionInicio == null) {
+            LOG.info("MARCACION INICIO ES NULL");
             resultadoInicio = 'F';
         } else {
             long tardanzaEntrada = tardanza(marcacionInicio.getHora(), turnoTolerancia);
@@ -453,13 +459,16 @@ public class AnalisisFinal implements AnalisisFinalLocal {
             } else {
                 resultadoInicio = 'R';
             }
-            detalle.setMilisegundosTardanza(tardanzaEntrada);
+            
+            detalle.setMilisegundosTardanza(tardanzaEntrada);            
+            LOG.info(String.format("MILIS TARDANZA: %s", detalle.getMilisegundosTardanza()));
         }
 
         Marcacion marcacionFin = marcacionControlador.buscarXFechaXhora(empleadoId, fechaFin, turnoSalida, turnoMaximaSalida);
         char resultadoFin;
 
         if (marcacionFin == null) {
+            LOG.info("MARCACION FIN ES NULL");
             resultadoFin = 'F';
         } else {
 //            long tardanzaEntrada = tardanza(marcacionInicio.getHora(), turnoTolerancia);
@@ -470,6 +479,7 @@ public class AnalisisFinal implements AnalisisFinalLocal {
         detalle.setFechaFin(fechaFin);
 
         if (resultadoInicio == 'F' || resultadoFin == 'F') {
+            LOG.info(String.format("RESULTADO INICIO: %s RESULTADO FIN: %s", resultadoInicio, resultadoFin));
             detalle.setResultado('F');
         } else if (resultadoInicio == 'T' || resultadoFin == 'T') {
             detalle.setResultado('T');
