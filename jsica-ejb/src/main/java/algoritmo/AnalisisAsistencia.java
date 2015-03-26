@@ -9,14 +9,6 @@ import com.personal.utiles.FechaUtil;
 import com.project.jsica.ejb.entidades.CambioTurno;
 import com.project.jsica.ejb.entidades.DetalleHorario;
 import com.project.jsica.ejb.entidades.DetalleRegistroAsistencia;
-import dao.DetalleHorarioFacadeLocal;
-import dao.EmpleadoHorarioFacadeLocal;
-import dao.HorarioFacadeLocal;
-import dao.JornadaFacadeLocal;
-import dao.MarcacionFacadeLocal;
-import dao.RegistroAsistenciaFacadeLocal;
-import dao.TCAnalisisFacadeLocal;
-import dao.TCSistemaFacadeLocal;
 import com.project.jsica.ejb.entidades.Empleado;
 import com.project.jsica.ejb.entidades.EmpleadoPermiso;
 import com.project.jsica.ejb.entidades.Feriado;
@@ -27,8 +19,16 @@ import com.project.jsica.ejb.entidades.TCAnalisis;
 import com.project.jsica.ejb.entidades.TCSistema;
 import com.project.jsica.ejb.entidades.Vacacion;
 import dao.CambioTurnoFacadeLocal;
+import dao.DetalleHorarioFacadeLocal;
+import dao.EmpleadoHorarioFacadeLocal;
 import dao.EmpleadoPermisoFacadeLocal;
 import dao.FeriadoFacadeLocal;
+import dao.HorarioFacadeLocal;
+import dao.JornadaFacadeLocal;
+import dao.MarcacionFacadeLocal;
+import dao.RegistroAsistenciaFacadeLocal;
+import dao.TCAnalisisFacadeLocal;
+import dao.TCSistemaFacadeLocal;
 import dao.VacacionFacadeLocal;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -353,6 +353,8 @@ public class AnalisisAsistencia {
         }
     }
     
+    private static final Logger LOG = Logger.getLogger(AnalisisAsistencia.class.getName());
+
     private DetalleRegistroAsistencia analizarTurno(Empleado empleado,
             RegistroAsistencia registro,
             Date fechaInicio,
@@ -380,6 +382,7 @@ public class AnalisisAsistencia {
             long tardanzaEntrada = tardanza(marcacionInicio.getHora(), turnoTolerancia);
             
             detalle.setHoraInicio(marcacionInicio.getHora());
+            LOG.info("Hora Inicio: "+ marcacionInicio.getHora());
             if (tardanzaEntrada > 0) {
                 resultadoInicio = 'T';
             } else {
