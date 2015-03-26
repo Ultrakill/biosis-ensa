@@ -25,6 +25,12 @@
                         <h:outputText value="#{jornadaController.selected.HEntrada}" title="#{myBundle.ViewJornadaTitle_HEntrada}">
                             <f:convertDateTime pattern="HH:mm:ss" />
                         </h:outputText>
+                        
+                        <h:outputLabel value="Tolerancia" for="tolerancia" />
+                        <h:outputText id="tolerancia" value="#{jornadaController.selected.minutosToleranciaRegularEntradaJornada}" />
+                        
+                        <h:outputLabel value="Tolerancia en tardanza" for="toleranciat" />
+                        <h:outputText id="toleranciat" value="#{jornadaController.selected.minutosToleranciaTardanzaEntradaJornada}" />
 
                         <h:outputText value="#{myBundle.ViewJornadaLabel_HSalida}"/>
                         <h:outputText value="#{jornadaController.selected.HSalida}" title="#{myBundle.ViewJornadaTitle_HSalida}">
