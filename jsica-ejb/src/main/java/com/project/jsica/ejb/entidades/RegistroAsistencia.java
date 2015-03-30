@@ -39,7 +39,7 @@ public class RegistroAsistencia implements Serializable {
     private Long id;
     @Basic(optional = true)
     @Temporal(TemporalType.DATE)
-    private Date fecha;
+    private Date fecha;    
     @JoinColumn(name = "biometrico_id", referencedColumnName = "id", nullable = true)
     @ManyToOne(optional = true)
     private Biometrico biometricoId;
@@ -65,6 +65,54 @@ public class RegistroAsistencia implements Serializable {
     private Feriado feriado;
     @OneToMany(mappedBy = "registroAsistencia",cascade = CascadeType.ALL)
     private List<DetalleRegistroAsistencia> detalleRegistroAsistenciaList;
+    
+    @Column(name = "hora_entrada")
+    @Temporal(TemporalType.TIME)
+    private Date horaEntrada;
+    @Column(name = "hora_salida")
+    @Temporal(TemporalType.TIME)
+    private Date horaSalida;
+    
+    @Column(name = "marcacion_inicio")
+    @Temporal(TemporalType.TIME)
+    private Date marcacionInicio;
+
+    public Date getHoraEntrada() {
+        return horaEntrada;
+    }
+
+    public void setHoraEntrada(Date horaEntrada) {
+        this.horaEntrada = horaEntrada;
+    }
+
+    public Date getHoraSalida() {
+        return horaSalida;
+    }
+
+    public void setHoraSalida(Date horaSalida) {
+        this.horaSalida = horaSalida;
+    }
+
+    public Date getMarcacionInicio() {
+        return marcacionInicio;
+    }
+
+    public void setMarcacionInicio(Date marcacionInicio) {
+        this.marcacionInicio = marcacionInicio;
+    }
+
+    public Date getMarcacionFin() {
+        return marcacionFin;
+    }
+
+    public void setMarcacionFin(Date marcacionFin) {
+        this.marcacionFin = marcacionFin;
+    }
+    @Column(name = "marcacion_fin")
+    @Temporal(TemporalType.TIME)
+    private Date marcacionFin;
+    
+    
 
     public Feriado getFeriado() {
         return feriado;

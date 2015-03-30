@@ -49,14 +49,9 @@
 
                     <p:panel header="Resultado">
                         <p:panel>
-                            <p:panelGrid columns="2" >
-                                <h:commandLink value="Exportar a excel" id="xls">
-                                    <p:dataExporter type="xls" target="datalist" fileName="reporte" pageOnly="true"/>
-                                </h:commandLink>
-                                <h:commandLink value="Exportar a csv">
-                                    <p:dataExporter type="csv" target="datalist" fileName="reporte" pageOnly="true"/>
-                                </h:commandLink>
-                            </p:panelGrid>
+                            <p:commandButton value="Descargar Reporte" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="ui-icon-arrowthick-1-s">
+                                <p:fileDownload value="#{reporteBean.setOpcionReporte(1)}" />
+                            </p:commandButton>
                         </p:panel>
                         <p:dataTable
                             id="datalist"
@@ -111,7 +106,7 @@
                                 </f:facet>
                                 <h:outputText value="#{reporte.milisTardanzaTotal}" converter="milisAMinutos"/>
                             </p:column>
-                            
+
                             <p:column>
                                 <f:facet name="header">
                                     <h:outputText value="Tiempo extra (minutos)"/>

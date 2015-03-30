@@ -352,8 +352,8 @@ public class AnalisisAsistencia {
             return null;
         }
     }
-    
-    private static final Logger LOG = Logger.getLogger(AnalisisAsistencia.class.getName());
+//    
+//    private static final Logger LOG = Logger.getLogger(AnalisisAsistencia.class.getName());
 
     private DetalleRegistroAsistencia analizarTurno(Empleado empleado,
             RegistroAsistencia registro,

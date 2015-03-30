@@ -325,6 +325,10 @@ public class AnalisisFinal implements AnalisisFinalLocal {
 
                             if (registro != null) {
                                 registro.setTurnoOriginal(turno);
+                                registro.setHoraEntrada(turno.getJornadaCodigo().getHEntrada());
+                                registro.setHoraSalida(turno.getJornadaCodigo().getHSalida());
+                                registro.setMarcacionInicio(detalleTurno.getHoraInicio());
+                                registro.setMarcacionFin(detalleTurno.getHoraFin());
                             }
                         }
                     }

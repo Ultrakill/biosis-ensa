@@ -79,12 +79,14 @@ public class ReporteBean implements Serializable {
     @EJB
     private AnalisisFinalLocal analisisService;
     private boolean nuevo = true;
+    private boolean nuevoReporte = true;
     private Date desde;
     private Date hasta;
     private Empleado empleado;
     private Area areaSeleccionada;
     private Boolean conGoce;
     private int opcion = 1;
+    private int opcionReporte = 1;
     private List<ReportePermisoBean> reportePermisos;
     private List<RegistroAsistencia> registroAsistencia;
 
@@ -129,6 +131,17 @@ public class ReporteBean implements Serializable {
 
     }
 
+    public int getOpcionReporte() {
+        return opcionReporte;
+    }
+
+    public void setOpcionReporte(int opcionReporte) {
+        LOG.info("OPCION REPORTE" + opcionReporte);
+        this.opcionReporte = opcionReporte;
+        this.nuevoReporte = true;
+        reporte3();
+    }
+
     public Date getDesde() {
         return desde;
     }
@@ -163,21 +176,23 @@ public class ReporteBean implements Serializable {
         this.areaSeleccionada = areaSeleccionada;
     }
 
+    private List<RegistroAsistencia> reporte;
+
     public List<RegistroAsistencia> getReporteAsistencias() {
         if (nuevo) {
             if (opcion == 1) {
                 LOG.info("REPORTE DE ASISTENCIA POR EMPLEADO");
                 registroAsistencia = registroAsistenciaController.buscarXEmpleado(empleado, desde, hasta);
-            }else {
+            } else {
                 LOG.info("REPORTE DE ASISTENCIA POR AREA");
                 registroAsistencia = registroAsistenciaController.buscarXArea(areaSeleccionada, desde, hasta);
+                LOG.info("TAMANO R X AREA: " + registroAsistencia.size());
+                reporte = registroAsistencia;
+                LOG.info("TAMANO DEL R para XLS: " + reporte.size());
             }
             nuevo = false;
         }
-        if(!registroAsistencia.isEmpty()){
-            reporte3(registroAsistencia);
-        }
-        
+
         return registroAsistencia;
 
     }
@@ -360,7 +375,7 @@ public class ReporteBean implements Serializable {
 //        List<Empleado> empleados = this.getEmpleados(opcion);
         List<EmpleadoPermiso> permisos;
         List<ReportePermisoBean> reporte = new ArrayList<>();
-        LOG.info("EMPLEADO: "+ empleado);
+        LOG.info("EMPLEADO: " + empleado);
         permisos = this.empleadoPermisoController.buscarXEmpleado(empleado, desde, hasta, conGoce);
 
         LOG.info("VIENE AL METODO REPORTE PERM");
@@ -647,6 +662,8 @@ public class ReporteBean implements Serializable {
 
     public void reporte2(List<ReportePermisoBean> reporte) {
         LOG.info("TAMAÑO reporte: " + reporte.size());
+        FacesContext fc = FacesContext.getCurrentInstance();
+        HttpServletResponse response = (HttpServletResponse) fc.getExternalContext().getResponse();
 
         HSSFWorkbook libro = new HSSFWorkbook();
 
@@ -709,101 +726,144 @@ public class ReporteBean implements Serializable {
             columna8.setCellValue(reporte.get(i).getMotivo());
         }
 
-        String NombreArchivo = "C:/reporte_permiso.xls";
-        File objFile = new File(NombreArchivo);
-//        FacesContext facesContext = FacesContext.getCurrentInstance();
-//        ExternalContext externalContext = facesContext.getExternalContext();
-//        externalContext.setResponseContentType("application/vnd.ms-excel");
-//        externalContext.setResponseHeader("Content-Disposition", "attachment; filename=\"reporte.xls\"");
-
         try {
-//            libro.write(externalContext.getResponseOutputStream());
-//            facesContext.responseComplete();
 
-            FileOutputStream archivoSalida = new FileOutputStream(objFile);
-            libro.write(archivoSalida);
-            archivoSalida.close();           
-            
+            OutputStream output = response.getOutputStream();
+
+            libro.write(output);
+            output.close();
+
+            fc.responseComplete();
+
         } catch (IOException ex) {
             LOG.info("ERROR: " + ex);
         }
     }
-    
-     public void reporte3(List<RegistroAsistencia> reporte) {
-        LOG.info("TAMAÑO reporte: " + reporte.size());
 
-        HSSFWorkbook libro = new HSSFWorkbook();
+    public void reporte3() {
+        if (nuevoReporte) {
+            LOG.info("OPCION: " + opcionReporte);
+            String nombreReporte = "";
+            int filas = 0;
+            if (opcionReporte == 2) {
+                reporte = registroAsistenciaController.buscarXArea(areaSeleccionada, desde, hasta);
+                LOG.info("TAMAÑO reporte: " + reporte.size());
+                nombreReporte = "Reporte de asistencia por area";
+                filas = 1;
+            } else if (opcionReporte == 1) {
+                reporte = registroAsistenciaController.buscarXEmpleado(empleado, desde, hasta);
+                LOG.info("TAMAÑO reporte: " + reporte.size());
+                nombreReporte = "Reporte de asistencia por empleado";
+                filas = 0;
+            }
 
-        HSSFFont fuente = libro.createFont();
-        fuente.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
-        HSSFCellStyle estiloCeldaCabecera = libro.createCellStyle();
-        estiloCeldaCabecera.setFont(fuente);
-        estiloCeldaCabecera.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+            FacesContext fc = FacesContext.getCurrentInstance();
+            HttpServletResponse response = (HttpServletResponse) fc.getExternalContext().getResponse();
 
-        DataFormat format = libro.createDataFormat();
+            response.reset();
+            response.setContentType("application/vnd.ms-excel");
+            response.setHeader("Content-Disposition", "attachment; filename=" + nombreReporte + ".xls");
 
-        HSSFCellStyle style = libro.createCellStyle();
-        style.setDataFormat(format.getFormat("hh:mm:ss"));
+            HSSFWorkbook libro = new HSSFWorkbook();
 
-        HSSFCellStyle fechas = libro.createCellStyle();
-        fechas.setDataFormat(format.getFormat("dd.MM.yyyy"));
+            HSSFFont fuente = libro.createFont();
+            fuente.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+            HSSFCellStyle estiloCeldaCabecera = libro.createCellStyle();
+            estiloCeldaCabecera.setFont(fuente);
+            estiloCeldaCabecera.setAlignment(HSSFCellStyle.ALIGN_CENTER);
 
-        HSSFSheet hoja = libro.createSheet("hoja 1");
+            DataFormat format = libro.createDataFormat();
 
-        //CREAR LAS CABECERAS
-        String[] cabeceras = {"CODIGO", "APELLIDOS Y NOMBRES", "FECHA", "TIPO", "TARDANZA", "TIEMPO EXTRA"};
+            HSSFCellStyle style = libro.createCellStyle();
+            style.setDataFormat(format.getFormat("hh:mm:ss"));
 
-        HSSFRow filaCabecera = hoja.createRow(0);
+            HSSFCellStyle fechas = libro.createCellStyle();
+            fechas.setDataFormat(format.getFormat("dd.MM.yyyy"));
 
-        for (int x = 0; x < cabeceras.length; x++) {
-            HSSFCell cabecera = filaCabecera.createCell(x);
-            cabecera.setCellValue(cabeceras[x]);
-            cabecera.setCellStyle(estiloCeldaCabecera);
+            HSSFSheet hoja = libro.createSheet("Reporte de Asistencias");
+
+            //CREAR LAS CABECERAS
+            String[] cabeceras = {"CODIGO", "APELLIDOS Y NOMBRES", "FECHA", "TIPO", "HORA DE INGRESO", "HORA DE SALIDA", "MARCACION DE ENTRADA", "MARCACION DE SALIDA", "TARDANZA(Minutos)"};
+
+            if (filas == 1) {
+                HSSFRow filaArea = hoja.createRow(0);
+                HSSFCell Area = filaArea.createCell(0);
+                Area.setCellValue("AREA");
+                Area.setCellStyle(estiloCeldaCabecera);
+
+                HSSFCell nombre = filaArea.createCell(1);
+                nombre.setCellValue(areaSeleccionada.getNombre() + "");
+            }
+
+            HSSFRow filaCabecera = hoja.createRow(filas);
+
+            for (int x = 0; x < cabeceras.length; x++) {
+                HSSFCell cabecera = filaCabecera.createCell(x);
+                cabecera.setCellValue(cabeceras[x]);
+                cabecera.setCellStyle(estiloCeldaCabecera);
+            }
+            //FIN DE CABECERAS
+            for (int i = filas; i < reporte.size(); i++) {
+
+                HSSFRow fila = hoja.createRow(i + 1);
+
+                HSSFCell columna1 = fila.createCell(0);
+                columna1.setCellValue(reporte.get(i).getEmpleado().getCodigo());
+
+                HSSFCell columna2 = fila.createCell(1);
+                columna2.setCellValue(reporte.get(i).getEmpleado().getNombreCompleto());
+
+                HSSFCell columna3 = fila.createCell(2);
+                columna3.setCellValue(reporte.get(i).getFecha());
+                columna3.setCellStyle(fechas);
+
+                HSSFCell columna4 = fila.createCell(3);
+                columna4.setCellValue(reporte.get(i).getTipo() + "");
+
+                HSSFCell columna5 = fila.createCell(4);
+                columna5.setCellValue(reporte.get(i).getHoraEntrada());
+                columna5.setCellStyle(style);
+
+                HSSFCell columna6 = fila.createCell(5);
+                columna6.setCellValue(reporte.get(i).getHoraSalida());
+                columna6.setCellStyle(style);
+
+                HSSFCell columna7 = fila.createCell(6);
+                if (reporte.get(i).getMarcacionInicio() != null) {
+                    columna7.setCellValue(reporte.get(i).getMarcacionInicio());
+                    columna7.setCellStyle(style);
+                } else {
+                    columna7.setCellValue("No marco.");
+                }
+
+                HSSFCell columna8 = fila.createCell(7);
+                if (reporte.get(i).getMarcacionFin() != null) {
+                    columna8.setCellValue(reporte.get(i).getMarcacionFin());
+                    columna8.setCellStyle(style);
+                } else {
+                    columna8.setCellValue("No marco.");
+                }
+
+                HSSFCell columna9 = fila.createCell(8);
+                int minutos = (int) ((reporte.get(i).getMilisTardanzaTotal() / (1000 * 60)) % 60);
+                columna9.setCellValue(minutos);
+                
+            }
+            
+            try {
+                OutputStream output = response.getOutputStream();
+
+                libro.write(output);
+                output.close();
+
+                fc.responseComplete();
+            } catch (IOException ex) {
+                LOG.info("ERROR: " + ex);
+            }
+
+            nuevoReporte = false;
         }
-        //FIN DE CABECERAS
-        for (int i = 0; i < reporte.size(); i++) {
 
-            HSSFRow fila = hoja.createRow(i + 1);
-
-            HSSFCell columna1 = fila.createCell(0);
-            columna1.setCellValue(reporte.get(i).getEmpleado().getCodigo());
-
-            HSSFCell columna2 = fila.createCell(1);
-            columna2.setCellValue(reporte.get(i).getEmpleado().getNombreCompleto());
-
-            HSSFCell columna3 = fila.createCell(2);
-            columna3.setCellValue(reporte.get(i).getFecha());
-            columna3.setCellStyle(fechas);
-
-            HSSFCell columna4 = fila.createCell(3);
-            columna4.setCellValue(reporte.get(i).getTipo()+"");
-            
-            HSSFCell columna5 = fila.createCell(4);
-            columna5.setCellValue(reporte.get(i).getMilisTardanzaTotal());
-            
-            HSSFCell columna6 = fila.createCell(5);
-            columna6.setCellValue(reporte.get(i).getMilisTrabajoTotal());
-        }
-
-        String NombreArchivo = "C:/reporte_asistencia.xls";
-        File objFile = new File(NombreArchivo);
-//        FacesContext facesContext = FacesContext.getCurrentInstance();
-//        ExternalContext externalContext = facesContext.getExternalContext();
-//        externalContext.setResponseContentType("application/vnd.ms-excel");
-//        externalContext.setResponseHeader("Content-Disposition", "attachment; filename=\"reporte.xls\"");
-
-        try {
-//            libro.write(externalContext.getResponseOutputStream());
-//            facesContext.responseComplete();
-
-            FileOutputStream archivoSalida = new FileOutputStream(objFile);
-            libro.write(archivoSalida);
-            archivoSalida.close();
-            
-            
-        } catch (IOException ex) {
-            LOG.info("ERROR: " + ex);
-        }
     }
 
     private void realizarAnalisis() {
