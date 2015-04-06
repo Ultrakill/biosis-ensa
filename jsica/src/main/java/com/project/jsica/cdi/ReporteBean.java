@@ -783,7 +783,7 @@ public class ReporteBean implements Serializable {
             HSSFSheet hoja = libro.createSheet("Reporte de Asistencias");
 
             //CREAR LAS CABECERAS
-            String[] cabeceras = {"CODIGO", "APELLIDOS Y NOMBRES", "FECHA", "TIPO", "HORA DE INGRESO", "HORA DE SALIDA", "MARCACION DE ENTRADA", "MARCACION DE SALIDA", "TARDANZA(Minutos)"};
+            String[] cabeceras = {"CODIGO", "APELLIDOS Y NOMBRES", "FECHA", "TIPO", "HORA DE INGRESO", "HORA DE SALIDA", "MARCACION DE ENTRADA", "MARCACION DE SALIDA", "TARDANZA(Minutos)", "SALIDA REFRIGERIO", "ENTRADA REFRIGERIO", "MARCACION SALIDA R", "MARCACION DE ENTRADA R", "TARDANZA(refrigerio)", "TARDANZA TOTAL"};
 
             if (filas == 1) {
                 HSSFRow filaArea = hoja.createRow(0);
@@ -847,6 +847,36 @@ public class ReporteBean implements Serializable {
                 HSSFCell columna9 = fila.createCell(8);
                 int minutos = (int) ((reporte.get(i).getMilisTardanzaTotal() / (1000 * 60)) % 60);
                 columna9.setCellValue(minutos);
+                
+                HSSFCell columna10 = fila.createCell(9);
+                columna10.setCellValue(reporte.get(i).getHoraSalidaRefrigerio());
+                columna10.setCellStyle(style);
+
+                HSSFCell columna11 = fila.createCell(10);
+                columna11.setCellValue(reporte.get(i).getHoraEntradaRefrigerio());
+                columna11.setCellStyle(style);
+                
+                HSSFCell columna12 = fila.createCell(11);
+                if (reporte.get(i).getMarcacionInicioRefrigerio()!= null) {
+                    columna12.setCellValue(reporte.get(i).getMarcacionInicioRefrigerio());
+                    columna12.setCellStyle(style);
+                } else {
+                    columna12.setCellValue("No marco.");
+                }
+
+                HSSFCell columna13 = fila.createCell(12);
+                if (reporte.get(i).getMarcacionFinRefrigerio()!= null) {
+                    columna13.setCellValue(reporte.get(i).getMarcacionFinRefrigerio());
+                    columna13.setCellStyle(style);
+                } else {
+                    columna13.setCellValue("No marco.");
+                }
+                
+                HSSFCell columna14 = fila.createCell(13);                
+                columna14.setCellValue((int) ((reporte.get(i).getMilisTardanzaRefrigerio()/ (1000 * 60)) % 60));
+                
+                HSSFCell columna15 = fila.createCell(14);                
+                columna15.setCellValue((int) ((reporte.get(i).getMilisTardanzaTotalFinal()/ (1000 * 60)) % 60));
                 
             }
             

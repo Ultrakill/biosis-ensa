@@ -76,6 +76,84 @@ public class RegistroAsistencia implements Serializable {
     @Column(name = "marcacion_inicio")
     @Temporal(TemporalType.TIME)
     private Date marcacionInicio;
+    
+    @Column(name = "marcacion_fin")
+    @Temporal(TemporalType.TIME)
+    private Date marcacionFin;
+    
+    //REFRIGERIO
+    @Column(name = "hora_salida_refrigerio")
+    @Temporal(TemporalType.TIME)
+    private Date horaSalidaRefrigerio;
+    @Column(name = "hora_entrada_refrigerio")
+    @Temporal(TemporalType.TIME)
+    private Date horaEntradaRefrigerio;
+    
+    @Column(name = "marcacion_inicio_refrigerio")
+    @Temporal(TemporalType.TIME)
+    private Date marcacionInicioRefrigerio;
+    
+    @Column(name = "marcacion_fin_refrigerio")
+    @Temporal(TemporalType.TIME)
+    private Date marcacionFinRefrigerio;
+    
+    @Column(name = "tardanza_refrigerio")
+    private long milisTardanzaRefrigerio;
+    
+    @Column(name = "tardanza_total_final")
+    private long milisTardanzaTotalFinal;
+
+    public long getMilisTardanzaTotalFinal() {
+        return milisTardanzaTotalFinal;
+    }
+
+    public void setMilisTardanzaTotalFinal(long milisTardanzaTotalFinal) {
+        this.milisTardanzaTotalFinal = milisTardanzaTotalFinal;
+    }
+    
+    
+
+    public long getMilisTardanzaRefrigerio() {
+        return milisTardanzaRefrigerio;
+    }
+
+    public void setMilisTardanzaRefrigerio(long milisTardanzaRefrigerio) {
+        this.milisTardanzaRefrigerio = milisTardanzaRefrigerio;
+    }
+    
+    public Date getHoraSalidaRefrigerio() {
+        return horaSalidaRefrigerio;
+    }
+
+    public void setHoraSalidaRefrigerio(Date horaSalidaRefrigerio) {
+        this.horaSalidaRefrigerio = horaSalidaRefrigerio;
+    }
+
+    public Date getHoraEntradaRefrigerio() {
+        return horaEntradaRefrigerio;
+    }
+
+    public void setHoraEntradaRefrigerio(Date horaEntradaRefrigerio) {
+        this.horaEntradaRefrigerio = horaEntradaRefrigerio;
+    }
+
+    public Date getMarcacionInicioRefrigerio() {
+        return marcacionInicioRefrigerio;
+    }
+
+    public void setMarcacionInicioRefrigerio(Date marcacionInicioRefrigerio) {
+        this.marcacionInicioRefrigerio = marcacionInicioRefrigerio;
+    }
+
+    public Date getMarcacionFinRefrigerio() {
+        return marcacionFinRefrigerio;
+    }
+
+    public void setMarcacionFinRefrigerio(Date marcacionFinRefrigerio) {
+        this.marcacionFinRefrigerio = marcacionFinRefrigerio;
+    }
+    
+    
 
     public Date getHoraEntrada() {
         return horaEntrada;
@@ -108,9 +186,7 @@ public class RegistroAsistencia implements Serializable {
     public void setMarcacionFin(Date marcacionFin) {
         this.marcacionFin = marcacionFin;
     }
-    @Column(name = "marcacion_fin")
-    @Temporal(TemporalType.TIME)
-    private Date marcacionFin;
+    
     
     
 

@@ -460,4 +460,72 @@ public class AnalisisAsistencia {
         }
     }
     
+//    private DetalleRegistroAsistencia analizarRefrigerio(String empleadoDNI, Date fechaInicio, Date horaInicio, Date horaFin, Date horaMaximaFin, int milisHoraInicio, int minutosRefrigerio) {
+//        DetalleRegistroAsistencia registroRefrigerio = new DetalleRegistroAsistencia();
+//        registroRefrigerio.setOrden(1);
+//        registroRefrigerio.setTipoRegistro('R');
+//
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTime(horaInicio);
+//        calendar.add(Calendar.MILLISECOND, milisHoraInicio);
+//
+//        Date horaMaximaInicio = calendar.getTime();
+//
+//        System.out.println("MINUTOS HORA INICIO: "+milisHoraInicio+" "+horaMaximaInicio);
+////        System.out.println("MARCACION INICIO REFRIGERIO PARAMS: " + fechaInicio + " " + horaInicio + " " + horaMaximaInicio);
+//        Marcacion marcacionInicio = marcacionControlador.buscarXFechaXhora(empleadoDNI, fechaInicio, horaInicio, horaMaximaInicio);
+//
+//        if (marcacionInicio == null) {
+//            //NO SE TOMA EN CUENTA EL REFRIGERIO
+//            registroRefrigerio.setHoraInicio(null);
+//            registroRefrigerio.setHoraFin(null);
+//            registroRefrigerio.setResultado('R');
+//        } else {
+//            registroRefrigerio.setHoraInicio(marcacionInicio.getHora());
+//            calendar.setTime(marcacionInicio.getHora());
+//            calendar.add(Calendar.MINUTE, minutosRefrigerio);
+//            Date horaEsperadaFin;
+//            if (horaFin.before(calendar.getTime())) {
+//                horaEsperadaFin = horaFin;
+//            } else {
+//                horaEsperadaFin = calendar.getTime();
+//            }
+//
+//            calendar.setTime(marcacionInicio.getHora());
+//            calendar.add(Calendar.SECOND, 1);
+//            Date limiteInferiorHoraFin = calendar.getTime();
+//
+//            Marcacion marcacionFin = marcacionControlador.buscarXFechaXhora(empleadoDNI, fechaInicio, limiteInferiorHoraFin, horaMaximaFin);
+//
+//            if (marcacionFin == null) {
+//                registroRefrigerio.setHoraFin(null);
+//                registroRefrigerio.setResultado('F');
+//            } else {
+////                System.out.println("HORA FIN, HORA ESPERADA FIN: "+marcacionFin.getHora()+" "+horaEsperadaFin);
+//                long minTardanza = this.tardanza(marcacionFin.getHora(), horaEsperadaFin);
+//                registroRefrigerio.setHoraFin(marcacionFin.getHora());
+//                registroRefrigerio.setMilisegundosTardanza(minTardanza);
+//
+//                if (minTardanza > 0) {
+//                    registroRefrigerio.setResultado('T');
+//                } else {
+//                    registroRefrigerio.setResultado('R');
+//                }
+//            }
+//        }
+//
+//        return registroRefrigerio;
+//    }
+    
+//    public BigDecimal tardanzaMin(Date horaMarcada, Date horaComparar) {
+//        Long diferencia = horaMarcada.getTime() - horaComparar.getTime();
+//        if (diferencia > 0) {
+////            System.out.println("MINUTOS: "+Double.parseDouble(diferencia+"")/(1000 * 60));
+//            double diferenciaMin = diferencia / (60 * 1000);
+//            return BigDecimal.valueOf(diferenciaMin);
+//        } else {
+//            return BigDecimal.ZERO;
+//        }
+//    }
+    
 }
