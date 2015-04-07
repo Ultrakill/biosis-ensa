@@ -38,4 +38,6 @@ public interface MotivoPermisoFacadeLocal {
 
     int count();
     
+    List<MotivoPermiso> buscarXTipo(String tipo);
+    
 }

@@ -7,33 +7,41 @@ package com.project.algoritmo;
 
 import com.personal.utiles.FechaUtil;
 import com.project.jsica.ejb.entidades.Area;
-import dao.CambioTurnoFacadeLocal;
-import dao.DetalleHorarioFacadeLocal;
-import dao.EmpleadoPermisoFacadeLocal;
 import com.project.jsica.ejb.entidades.DetalleHorario;
 import com.project.jsica.ejb.entidades.DetalleRegistroAsistencia;
 import com.project.jsica.ejb.entidades.Empleado;
 import com.project.jsica.ejb.entidades.EmpleadoPermiso;
 import com.project.jsica.ejb.entidades.Feriado;
 import com.project.jsica.ejb.entidades.Marcacion;
+import com.project.jsica.ejb.entidades.MotivoPermiso;
+import com.project.jsica.ejb.entidades.Permiso;
 import com.project.jsica.ejb.entidades.RegistroAsistencia;
 import com.project.jsica.ejb.entidades.TCAnalisis;
 import com.project.jsica.ejb.entidades.TCSistema;
 import com.project.jsica.ejb.entidades.Vacacion;
+import dao.CambioTurnoFacadeLocal;
+import dao.DetalleHorarioFacadeLocal;
+import dao.EmpleadoFacadeLocal;
 import dao.EmpleadoHorarioFacadeLocal;
+import dao.EmpleadoPermisoFacadeLocal;
 import dao.FeriadoFacadeLocal;
 import dao.HorarioFacadeLocal;
 import dao.JornadaFacadeLocal;
 import dao.MarcacionFacadeLocal;
+import dao.MotivoPermisoFacadeLocal;
+import dao.PermisoFacade;
+import dao.PermisoFacadeLocal;
 import dao.RegistroAsistenciaFacadeLocal;
 import dao.TCAnalisisFacadeLocal;
 import dao.TCSistemaFacadeLocal;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import org.apache.log4j.Logger;
 
 /**
@@ -65,6 +73,14 @@ public class AnalisisFinal implements AnalisisFinalLocal {
     private EmpleadoPermisoFacadeLocal empleadoPermisoControlador;
     @EJB
     private CambioTurnoFacadeLocal cambioTurnoControlador;
+
+    @EJB
+    private EmpleadoFacadeLocal empleadoControlador;
+
+    @EJB
+    private MotivoPermisoFacadeLocal motivoPermisoControlador;
+    @EJB
+    private PermisoFacadeLocal permisoControlador;
 
     private final int MIN_FIN_MARCACION = 500;
     private final int MIN_ANTES_INICIO_PERMISO = 30;
@@ -255,6 +271,11 @@ public class AnalisisFinal implements AnalisisFinalLocal {
         RegistroAsistencia registro = new RegistroAsistencia();
         registro.setFecha(fInicio);
         registro.setEmpleado(empleado);
+        registro.setHoraEntrada(turno.getJornadaCodigo().getHEntrada());
+        registro.setHoraSalida(turno.getJornadaCodigo().getHSalida());
+        registro.setHoraSalidaRefrigerio(turno.getJornadaCodigo().getHSalidaRefrigerio());
+        registro.setHoraEntradaRefrigerio(turno.getJornadaCodigo().getHEntradaRefrigerio());
+        
         Date turnoHastaSalida = cal.getTime();
         if (FechaUtil.compararFechaHora(fInicio, hInicio, fInicio, turnoHastaSalida) <= 0
                 && FechaUtil.compararFechaHora(fFin, hFin, fInicio, turnoHastaSalida) >= 0) {
@@ -287,6 +308,8 @@ public class AnalisisFinal implements AnalisisFinalLocal {
                         //TOMAMOS EN CUENTA EL ONOMASTICO
                         if (isOnomastico(empleado, fInicio)) {
                             //SE REGISTRA COMO ONOMASTICO
+                            registro.setPermisoId(generarPermisoOnomastico(empleado.getDocIdentidad(), fInicio));
+                            registro.setTipo('P');
                         } else {
                             //SE PROCEDE AL ANALISIS DE LA JORNADA
                             List<DetalleRegistroAsistencia> detalles = new ArrayList<>();
@@ -318,17 +341,16 @@ public class AnalisisFinal implements AnalisisFinalLocal {
                                     FechaUtil.soloHora(calendar.getTime()));
 
                             detalles.add(detalleTurno);
-                            
-                            LOG.info("SALIDA AL REFRIGERIO"+turno.getJornadaCodigo().getHEntradaRefrigerio());
+
+                            LOG.info("SALIDA AL REFRIGERIO" + turno.getJornadaCodigo().getHEntradaRefrigerio());
 
                             Long milisInicioRefrigerio = turno.getJornadaCodigo().getHEntradaRefrigerio().getTime() - turno.getJornadaCodigo().getHSalidaRefrigerio().getTime();
 //                            Long milisHoraMaximaSalida = turno.getJornadaCodigo().getHSalidaRefrigerio().getTime() + 30*(1000*60);
-                            
 
                             Calendar calc = Calendar.getInstance();
                             calc.setTime(turno.getJornadaCodigo().getHEntradaRefrigerio());
                             calc.add(Calendar.MINUTE, 240);
-                            
+
                             String empleadoID = getCodigoEmpleado(empleado);
 
                             DetalleRegistroAsistencia detalleRefrigerio = analizarRefrigerio(
@@ -353,30 +375,29 @@ public class AnalisisFinal implements AnalisisFinalLocal {
 
                                     if (detallito.getTipoRegistro() == 'R') {
                                         LOG.info("ENTRO AL IF DEL REFRIGERIO");
-                                        LOG.info("MARCACION SALIDA REFRIGERIO: "+ detallito.getHoraInicio());
-                                        LOG.info("MARCACION REGRESO DEL REFRIGERIO: "+ detallito.getHoraFin());
-                                        registro.setHoraSalidaRefrigerio(turno.getJornadaCodigo().getHSalidaRefrigerio());
-                                        registro.setHoraEntradaRefrigerio(turno.getJornadaCodigo().getHEntradaRefrigerio());
+                                        LOG.info("MARCACION SALIDA REFRIGERIO: " + detallito.getHoraInicio());
+                                        LOG.info("MARCACION REGRESO DEL REFRIGERIO: " + detallito.getHoraFin());
+//                                        registro.setHoraSalidaRefrigerio(turno.getJornadaCodigo().getHSalidaRefrigerio());
+//                                        registro.setHoraEntradaRefrigerio(turno.getJornadaCodigo().getHEntradaRefrigerio());
                                         registro.setMarcacionInicioRefrigerio(detallito.getHoraInicio());
                                         registro.setMarcacionFinRefrigerio(detallito.getHoraFin());
                                         registro.setMilisTardanzaRefrigerio(detalleRefrigerio.getMilisegundosTardanza() == null ? 0 : detalleRefrigerio.getMilisegundosTardanza());
-                                        
-                                    }else{
+
+                                    } else {
                                         LOG.info("NO ENTRO AL REFRIGERIO");
-                                        registro.setHoraEntrada(turno.getJornadaCodigo().getHEntrada());
-                                        registro.setHoraSalida(turno.getJornadaCodigo().getHSalida());
+//                                        registro.setHoraEntrada(turno.getJornadaCodigo().getHEntrada());
+//                                        registro.setHoraSalida(turno.getJornadaCodigo().getHSalida());
                                         registro.setMarcacionInicio(detalleTurno.getHoraInicio());
                                         registro.setMarcacionFin(detalleTurno.getHoraFin());
                                         registro.setMilisTardanzaRefrigerio(0);
                                     }
                                 }
-                                
-                                if(registro.getMilisTardanzaRefrigerio() != 0){
-                                    registro.setMilisTardanzaTotalFinal(registro.getMilisTardanzaTotal()+registro.getMilisTardanzaRefrigerio());
-                                }else{
+
+                                if (registro.getMilisTardanzaRefrigerio() != 0) {
+                                    registro.setMilisTardanzaTotalFinal(registro.getMilisTardanzaTotal() + registro.getMilisTardanzaRefrigerio());
+                                } else {
                                     registro.setMilisTardanzaTotalFinal(registro.getMilisTardanzaTotal());
                                 }
-                                
 
                             }
                         }
@@ -572,7 +593,7 @@ public class AnalisisFinal implements AnalisisFinalLocal {
         return true;
     }
 
-    private DetalleRegistroAsistencia analizarRefrigerio(String empleadoDNI,RegistroAsistencia registro, Date fechaInicio, Date horaInicio, Date horaFin, Date horaMaximaFin, int milisHoraInicio, int minutosRefrigerio) {
+    private DetalleRegistroAsistencia analizarRefrigerio(String empleadoDNI, RegistroAsistencia registro, Date fechaInicio, Date horaInicio, Date horaFin, Date horaMaximaFin, int milisHoraInicio, int minutosRefrigerio) {
         DetalleRegistroAsistencia registroRefrigerio = new DetalleRegistroAsistencia();
         registroRefrigerio.setOrden(1);
         registroRefrigerio.setRegistroAsistencia(registro);
@@ -583,12 +604,12 @@ public class AnalisisFinal implements AnalisisFinalLocal {
         calendar.add(Calendar.MILLISECOND, milisHoraInicio);
 
         Date horaMaximaInicio = calendar.getTime();
-        System.out.println("HORA INICIO: "+ horaInicio);
+        System.out.println("HORA INICIO: " + horaInicio);
         System.out.println("MINUTOS HORA INICIO: " + milisHoraInicio + " " + horaMaximaInicio);
-        LOG.info("DOC EMPLEADO: "+empleadoDNI);
-        LOG.info("FECHA DEL REFRIGERIO: "+ fechaInicio);
-        LOG.info("HORA INICIO REFRI: "+horaInicio);
-        LOG.info("HORA MAXIMA REFRI: "+horaMaximaInicio);
+        LOG.info("DOC EMPLEADO: " + empleadoDNI);
+        LOG.info("FECHA DEL REFRIGERIO: " + fechaInicio);
+        LOG.info("HORA INICIO REFRI: " + horaInicio);
+        LOG.info("HORA MAXIMA REFRI: " + horaMaximaInicio);
 //        System.out.println("MARCACION INICIO REFRIGERIO PARAMS: " + fechaInicio + " " + horaInicio + " " + horaMaximaInicio);
         Marcacion marcacionInicio = marcacionControlador.buscarXFechaXhora(empleadoDNI, fechaInicio, horaInicio, horaMaximaInicio);
 
@@ -633,5 +654,42 @@ public class AnalisisFinal implements AnalisisFinalLocal {
         }
 
         return registroRefrigerio;
+    }
+
+    private Permiso generarPermisoOnomastico(String dni, Date fInicio) {
+//        pc.;
+        Permiso onomastico = new Permiso();
+
+        //CREAMOS LA ASIGNACION
+        EmpleadoPermiso ap = new EmpleadoPermiso();
+        List<Empleado> empleado = empleadoControlador.buscarXEmpleado(dni);
+        ap.setEmpleadoId(empleado.get(0));
+        ap.setPermisoId(onomastico);
+
+        //
+//        onomastico.getEmpleadoPermisoList().add(ap);
+        onomastico.setFechaInicio(fInicio);
+        onomastico.setFechaFin(fInicio);
+        onomastico.setPorFecha(true);
+        List<MotivoPermiso> motivo = motivoPermisoControlador.buscarXTipo("ONO");
+        onomastico.setMotivoPermisoCodigo(motivo.get(0));
+        onomastico.setTipo("F");
+
+        permisoControlador.create(onomastico);
+//        onomastico.set.setMotivo("LICENCIA POR ONOMÁSTICO");
+//        onomastico.setDocumento("LICENCIA POR ONOMÁSTICO");
+
+//        long diferencia = onomastico.getFechaFin().getTime() - onomastico.getFechaInicio().getTime();
+//        BigDecimal diferenciaMin = new BigDecimal(diferencia / (60 * 1000 * 60));
+//        onomastico.setDiferencia(diferenciaMin);
+//        if () {
+        empleadoPermisoControlador.create(ap);
+        LOG.info("SE GUARDO EL PERMISO POR ONOMASTICO");
+//        } else {
+//            LOG.info("HUBO UN ERROR");
+//        }
+
+//        pc.getDao().getEntityManager();
+        return onomastico;
     }
 }

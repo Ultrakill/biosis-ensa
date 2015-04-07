@@ -7,7 +7,9 @@
 package dao;
 
 import com.project.jsica.ejb.entidades.Empleado;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -35,6 +37,15 @@ public class EmpleadoFacade extends AbstractFacade<Empleado> implements Empleado
         return this.search("SELECT e FROM Empleado e");
     }
     
-    
+    @Override
+    public List<Empleado> buscarXEmpleado(String dni) {
+
+        String jpql = "SELECT em FROM Empleado em WHERE em.docIdentidad = :dni";
+
+        Map<String, Object> parametros = new HashMap<>();
+        parametros.put("dni", dni);
+
+        return this.search(jpql, parametros);
+    }
     
 }

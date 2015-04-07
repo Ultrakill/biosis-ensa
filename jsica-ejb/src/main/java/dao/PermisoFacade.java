@@ -7,6 +7,9 @@
 package dao;
 
 import com.project.jsica.ejb.entidades.Permiso;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,5 +31,7 @@ public class PermisoFacade extends AbstractFacade<Permiso> implements PermisoFac
     public PermisoFacade() {
         super(Permiso.class);
     }
+    
+    
     
 }

@@ -39,5 +39,6 @@ public interface EmpleadoFacadeLocal {
     int count();
 
     List<Empleado> buscarTodos();
+    List<Empleado> buscarXEmpleado(String dni);
     
 }
